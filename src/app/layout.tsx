@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 
 
@@ -34,9 +35,13 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
+      <body
+        id="top"
+        className="min-h-full flex flex-col font-sans bg-background text-foreground"
+      >
         <Navbar />
         <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

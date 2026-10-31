@@ -14,8 +14,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Single Next.js 16 App Router app, not a monorepo. `@/*` maps to `src/*`.
 - This is the **client** repo despite `package.json` still being named `b14_a8_events_management_server`.
-- Routes currently implemented: `/`, `/sign-in`, `/sign-up`, plus the 404 page. `src/app/(auth)/` is a route group, so it does not appear in the URL.
-- Auth is UI-only: `AuthDialog`, `/sign-in`, and `/sign-up` fake submission with `alert()` + `setTimeout`. There is no API client, server action, auth provider, or env var usage yet.
+- Routes currently implemented: `/`, `/alerts`, `/sign-in`, `/sign-up`, plus the 404 page. `src/app/(auth)/` is a route group, so it does not appear in the URL.
+- Auth and the local-cause-alert subscription are UI-only: they fake submission with `alert()`/local state + `setTimeout`. There is no API client, server action, auth provider, or env var usage yet.
 - `Navbar` links to `/upcoming-events` and `/create-event`, but those routes do not exist yet.
 - App shell: `src/app/layout.tsx` (fonts + `Navbar`). Home: `src/app/page.tsx` composes sections from `src/components/home/`; dummy upcoming-event data is in `src/data/upcoming-events.ts`. Shared components in `src/components/shared/`; generated primitives in `src/components/ui/`.
 
