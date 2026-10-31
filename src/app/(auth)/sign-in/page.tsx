@@ -14,22 +14,96 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
+
+function getSignInErrorMessage(
+  error: { code?: string; message?: string } | null
+) {
+  switch (error?.code) {
+    case "INVALID_EMAIL_OR_PASSWORD":
+    case "INVALID_PASSWORD":
+      return "Incorrect email or password. Please try again.";
+    case "INVALID_EMAIL":
+      return "Please enter a valid email address.";
+    case "EMAIL_NOT_VERIFIED":
+      return "Please verify your email address before signing in.";
+    case "VALIDATION_ERROR":
+      return "Please check your email and password and try again.";
+    default:
+      return error?.message || "We couldn't sign you in. Please try again.";
+  }
+}
 
 export default function SignInPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const trimmedEmail = email.trim();
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmedEmail);
+
+  const errors = {
+    email: !trimmedEmail
+      ? "Email address is required."
+      : !isEmailValid
+        ? "Please enter a valid email address."
+        : "",
+    password: !password ? "Password is required." : "",
+  };
+
+  const showError = (field: keyof typeof touched) =>
+    (touched[field] || submitted) && !!errors[field];
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitted(true);
+
+    if (!isEmailValid || !password) return;
+
     setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      const { error } = await authClient.signIn.email({
+        email: trimmedEmail,
+        password,
+        rememberMe,
+      });
+
+      if (error) {
+        toast.error(getSignInErrorMessage(error));
+        return;
+      }
+
+      toast.success("Signed in successfully. Welcome back!");
+      router.push("/");
+      router.refresh();
+    } catch {
+      toast.error(
+        "We couldn't sign you in right now. Check your connection and try again."
+      );
+    } finally {
       setIsLoading(false);
-      alert(`Successfully signed in as ${email}!`);
-    }, 800);
+    }
   };
 
   return (
@@ -109,7 +183,7 @@ export default function SignInPage() {
             </div>
 
             {/* Email Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
@@ -122,13 +196,35 @@ export default function SignInPage() {
                   <Input
                     id="email"
                     type="email"
-                    required
+                    inputMode="email"
+                    autoComplete="email"
+                    maxLength={254}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, email: true }))
+                    }
                     placeholder="name@example.com"
-                    className="pl-10 h-10 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-sm focus-visible:ring-indigo-500"
+                    aria-invalid={showError("email") || undefined}
+                    aria-describedby={
+                      showError("email") ? "signin-email-error" : undefined
+                    }
+                    className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                      showError("email")
+                        ? "border-red-500 focus-visible:ring-red-500"
+                        : "border-slate-200 dark:border-slate-800 focus-visible:ring-indigo-500"
+                    }`}
                   />
                 </div>
+
+                {showError("email") && (
+                  <p
+                    id="signin-email-error"
+                    className="text-xs text-red-500"
+                  >
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -143,7 +239,9 @@ export default function SignInPage() {
                     href="#forgot"
                     onClick={(e) => {
                       e.preventDefault();
-                      alert("Password reset instructions sent to your email!");
+                      toast.info(
+                        "Password reset instructions sent to your email!"
+                      );
                     }}
                     className="text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
                   >
@@ -155,15 +253,32 @@ export default function SignInPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    required
+                    autoComplete="current-password"
+                    maxLength={128}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, password: true }))
+                    }
                     placeholder="••••••••"
-                    className="pl-10 pr-10 h-10 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-sm focus-visible:ring-indigo-500"
+                    aria-invalid={showError("password") || undefined}
+                    aria-describedby={
+                      showError("password")
+                        ? "signin-password-error"
+                        : undefined
+                    }
+                    className={`pl-10 pr-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                      showError("password")
+                        ? "border-red-500 focus-visible:ring-red-500"
+                        : "border-slate-200 dark:border-slate-800 focus-visible:ring-indigo-500"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                   >
                     {showPassword ? (
@@ -173,6 +288,15 @@ export default function SignInPage() {
                     )}
                   </button>
                 </div>
+
+                {showError("password") && (
+                  <p
+                    id="signin-password-error"
+                    className="text-xs text-red-500"
+                  >
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               {/* Remember Me */}
@@ -202,7 +326,7 @@ export default function SignInPage() {
             </form>
           </CardContent>
 
-          <CardFooter className="p-0 mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 justify-center">
+          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-slate-100 dark:border-slate-800 justify-center">
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Don&apos;t have an account yet?{" "}
               <Link

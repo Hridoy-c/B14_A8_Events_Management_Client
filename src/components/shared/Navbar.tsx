@@ -8,12 +8,10 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import AuthDialog from "./AuthDialog";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Monitor scroll for dynamic elevation styling
   useEffect(() => {
@@ -124,10 +122,9 @@ export default function Navbar() {
 
             {/* 3. LOGIN BUTTON & MOBILE MENU TOGGLE */}
             <div className="flex items-center gap-3">
-              {/* Login Button: Triggers shadcn Dialog directly over home page */}
-              <button
-                type="button"
-                onClick={() => setIsAuthOpen(true)}
+              {/* Login Button: goes to the /sign-in page */}
+              <Link
+                href="/sign-in"
                 className="relative group inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white overflow-hidden shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 active:scale-95 cursor-pointer"
               >
                 {/* Background Gradient using Primary (Indigo) & Secondary (Coral Rose) */}
@@ -140,7 +137,7 @@ export default function Navbar() {
                   <LogIn className="h-4 w-4" />
                   <span>Login</span>
                 </span>
-              </button>
+              </Link>
 
               {/* Mobile Menu Hamburger Button */}
               <button
@@ -180,24 +177,18 @@ export default function Navbar() {
               </span>
             </Link>
 
-            {/* Mobile Login Button to open Dialog */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                setIsAuthOpen(true);
-              }}
+            {/* Mobile Login Link */}
+            <Link
+              href="/sign-in"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 active:scale-[0.98] transition-all cursor-pointer"
             >
               <LogIn className="h-4 w-4" />
               <span>Login to EventPulse</span>
-            </button>
+            </Link>
           </div>
         )}
       </header>
-
-      {/* shadcn/ui Auth Dialog rendered over home page */}
-      <AuthDialog open={isAuthOpen} onOpenChange={setIsAuthOpen} />
     </>
   );
 }

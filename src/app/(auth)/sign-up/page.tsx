@@ -1,8 +1,8 @@
-
 "use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import {
   Card,
@@ -29,9 +29,37 @@ import {
   ArrowRight,
   Check,
   X,
+  CircleAlert,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
+
+function getAuthErrorMessage(
+  error: { code?: string; message?: string } | null
+) {
+  switch (error?.code) {
+    case "USER_ALREADY_EXISTS":
+    case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
+      return "An account with this email already exists. Try signing in instead.";
+    case "INVALID_EMAIL":
+      return "Please enter a valid email address.";
+    case "VALIDATION_ERROR":
+      return "Please enter a valid email address and a password that meets the requirements.";
+    case "PASSWORD_TOO_SHORT":
+      return "Password must be at least 8 characters long.";
+    case "PASSWORD_TOO_LONG":
+      return "Password must be 128 characters or fewer.";
+    default:
+      return (
+        error?.message ||
+        "We couldn't create your account. Please try again."
+      );
+  }
+}
 
 export default function SignUpPage() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -40,6 +68,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
 
   const [touched, setTouched] = useState({
     name: false,
@@ -50,7 +79,12 @@ export default function SignUpPage() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  // Password validation rules
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim();
+  const trimmedImageUrl = imageUrl.trim();
+
+  // Password validation rules (keep in sync with the server config in
+  // src/lib/auth.ts: 8–128 characters).
   const passwordRules = [
     {
       label: "At least one uppercase letter (A-Z)",
@@ -61,29 +95,29 @@ export default function SignUpPage() {
       valid: /[a-z]/.test(password),
     },
     {
-      label: "Minimum 6 characters length",
-      valid: password.length >= 6,
+      label: "At least 8 characters",
+      valid: password.length >= 8,
     },
   ];
 
-  const isPasswordValid = passwordRules.every(
-    (rule) => rule.valid
-  );
+  const isPasswordValid =
+    passwordRules.every((rule) => rule.valid) &&
+    password.length <= 128;
 
   // Email validation
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    email
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(
+    trimmedEmail
   );
 
   // Name validation
-  const isNameValid = name.trim().length >= 2;
+  const isNameValid = trimmedName.length >= 2;
 
   // Image URL validation (optional)
   const isImageValid = (() => {
-    if (!imageUrl.trim()) return true;
+    if (!trimmedImageUrl) return true;
 
     try {
-      const url = new URL(imageUrl);
+      const url = new URL(trimmedImageUrl);
 
       return (
         url.protocol === "http:" ||
@@ -96,27 +130,29 @@ export default function SignUpPage() {
 
   // Error messages
   const errors = {
-    name: !name.trim()
+    name: !trimmedName
       ? "Full name is required."
       : !isNameValid
         ? "Name must contain at least 2 characters."
         : "",
 
-    email: !email.trim()
+    email: !trimmedEmail
       ? "Email address is required."
       : !isEmailValid
         ? "Please enter a valid email address."
         : "",
 
     imageUrl: !isImageValid
-      ? "Please enter a valid image URL."
+      ? "Please enter a valid http(s) image URL."
       : "",
 
     password: !password
       ? "Password is required."
-      : !isPasswordValid
-        ? "Please meet all password requirements."
-        : "",
+      : password.length > 128
+        ? "Password must be 128 characters or fewer."
+        : !isPasswordValid
+          ? "Please meet all password requirements."
+          : "",
   };
 
   // Show errors after blur or submit
@@ -124,10 +160,12 @@ export default function SignUpPage() {
     (touched[field] || submitted) && !!errors[field];
 
   // Handle form submit
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-
     setSubmitted(true);
+    setAuthError("");
 
     const isFormValid =
       isNameValid &&
@@ -140,15 +178,30 @@ export default function SignUpPage() {
 
     setIsLoading(true);
 
-    // Demo registration
-    // Replace this with your authentication API
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name: trimmedName,
+        email: trimmedEmail,
+        password,
+        image: trimmedImageUrl || undefined,
+      });
+      console.log(data, error)
 
-      alert(
-        `Welcome to EventPulse, ${name}! Your account has been created.`
+      if (error) {
+        setAuthError(getAuthErrorMessage(error));
+        return;
+      }
+
+      toast.success("Account created successfully. Welcome to EventPulse!");
+      router.push("/");
+      router.refresh();
+    } catch {
+      setAuthError(
+        "We couldn't create your account right now. Check your connection and try again."
       );
-    }, 800);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -185,6 +238,9 @@ export default function SignUpPage() {
             <form
               onSubmit={handleSubmit}
               noValidate
+              onChange={() => {
+                if (authError) setAuthError("");
+              }}
               className="space-y-4"
             >
 
@@ -202,7 +258,10 @@ export default function SignUpPage() {
 
                   <Input
                     id="name"
+                    name="name"
                     type="text"
+                    autoComplete="name"
+                    maxLength={80}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onBlur={() =>
@@ -212,6 +271,10 @@ export default function SignUpPage() {
                       }))
                     }
                     placeholder="Tanvir Ahmed"
+                    aria-invalid={showError("name") || undefined}
+                    aria-describedby={
+                      showError("name") ? "name-error" : undefined
+                    }
                     className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
                       showError("name")
                         ? "border-red-500 focus-visible:ring-red-500"
@@ -221,7 +284,7 @@ export default function SignUpPage() {
                 </div>
 
                 {showError("name") && (
-                  <p className="text-xs text-red-500">
+                  <p id="name-error" className="text-xs text-red-500">
                     {errors.name}
                   </p>
                 )}
@@ -241,7 +304,11 @@ export default function SignUpPage() {
 
                   <Input
                     id="email"
+                    name="email"
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    maxLength={254}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={() =>
@@ -251,6 +318,10 @@ export default function SignUpPage() {
                       }))
                     }
                     placeholder="name@example.com"
+                    aria-invalid={showError("email") || undefined}
+                    aria-describedby={
+                      showError("email") ? "email-error" : undefined
+                    }
                     className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
                       showError("email")
                         ? "border-red-500 focus-visible:ring-red-500"
@@ -260,7 +331,7 @@ export default function SignUpPage() {
                 </div>
 
                 {showError("email") && (
-                  <p className="text-xs text-red-500">
+                  <p id="email-error" className="text-xs text-red-500">
                     {errors.email}
                   </p>
                 )}
@@ -280,7 +351,10 @@ export default function SignUpPage() {
 
                   <Input
                     id="image"
+                    name="imageUrl"
                     type="url"
+                    autoComplete="url"
+                    maxLength={2048}
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     onBlur={() =>
@@ -290,6 +364,12 @@ export default function SignUpPage() {
                       }))
                     }
                     placeholder="https://images.unsplash.com/..."
+                    aria-invalid={showError("imageUrl") || undefined}
+                    aria-describedby={
+                      showError("imageUrl")
+                        ? "image-error"
+                        : "image-hint"
+                    }
                     className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
                       showError("imageUrl")
                         ? "border-red-500 focus-visible:ring-red-500"
@@ -299,11 +379,14 @@ export default function SignUpPage() {
                 </div>
 
                 {showError("imageUrl") ? (
-                  <p className="text-xs text-red-500">
+                  <p id="image-error" className="text-xs text-red-500">
                     {errors.imageUrl}
                   </p>
                 ) : (
-                  <p className="text-[11px] text-slate-400">
+                  <p
+                    id="image-hint"
+                    className="text-[11px] text-slate-400"
+                  >
                     Optional: Leave empty for default avatar.
                   </p>
                 )}
@@ -323,7 +406,10 @@ export default function SignUpPage() {
 
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    maxLength={128}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onBlur={() =>
@@ -333,6 +419,12 @@ export default function SignUpPage() {
                       }))
                     }
                     placeholder="Create a strong password"
+                    aria-invalid={showError("password") || undefined}
+                    aria-describedby={
+                      showError("password")
+                        ? "password-rules password-error"
+                        : "password-rules"
+                    }
                     className={`pl-10 pr-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
                       showError("password")
                         ? "border-red-500 focus-visible:ring-red-500"
@@ -362,7 +454,11 @@ export default function SignUpPage() {
                 </div>
 
                 {/* Password Validation Checklist */}
-                <ul className="space-y-1.5 pt-2" aria-live="polite">
+                <ul
+                  id="password-rules"
+                  className="space-y-1.5 pt-2"
+                  aria-live="polite"
+                >
                   {passwordRules.map((rule) => (
                     <li
                       key={rule.label}
@@ -390,7 +486,7 @@ export default function SignUpPage() {
                 </ul>
 
                 {showError("password") && (
-                  <p className="text-xs text-red-500">
+                  <p id="password-error" className="text-xs text-red-500">
                     {errors.password}
                   </p>
                 )}
@@ -404,6 +500,12 @@ export default function SignUpPage() {
                     checked={agreeTerms}
                     onCheckedChange={(checked) =>
                       setAgreeTerms(checked === true)
+                    }
+                    aria-invalid={
+                      submitted && !agreeTerms ? true : undefined
+                    }
+                    aria-describedby={
+                      submitted && !agreeTerms ? "terms-error" : undefined
                     }
                     className="mt-0.5"
                   />
@@ -431,11 +533,21 @@ export default function SignUpPage() {
                 </div>
 
                 {submitted && !agreeTerms && (
-                  <p className="text-xs text-red-500">
+                  <p id="terms-error" className="text-xs text-red-500">
                     Please agree to the Terms of Service.
                   </p>
                 )}
               </div>
+
+              {authError && (
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs leading-relaxed text-red-600 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-400"
+                >
+                  <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
 
               {/* Register Button */}
               <Button
@@ -454,7 +566,7 @@ export default function SignUpPage() {
           </CardContent>
 
           {/* Login Link */}
-          <CardFooter className="p-0 mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 justify-center">
+          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-slate-100 dark:border-slate-800 justify-center">
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Already have an account?{" "}
               <Link

@@ -3,6 +3,7 @@ import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
+import ToastProvider from "@/components/shared/ToastProvider";
 
 
 const outfit = Outfit({
@@ -42,6 +43,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        <ToastProvider position="top-center" autoClose={3000} />
       </body>
     </html>
   );
