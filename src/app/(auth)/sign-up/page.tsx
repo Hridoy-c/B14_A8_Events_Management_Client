@@ -32,6 +32,7 @@ import {
   CircleAlert,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import { toast } from "react-toastify";
 
 function getAuthErrorMessage(
@@ -234,6 +235,11 @@ export default function SignUpPage() {
           </CardHeader>
 
           <CardContent className="p-0">
+
+            {/* Social Logins */}
+            <div className="mb-5">
+              <SocialAuthButtons />
+            </div>
 
             <form
               onSubmit={handleSubmit}
