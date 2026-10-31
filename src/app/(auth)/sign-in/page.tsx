@@ -94,8 +94,19 @@ export default function SignInPage() {
         return;
       }
 
+      const redirectParam = new URLSearchParams(window.location.search).get(
+        "redirect"
+      );
+      const redirectTo =
+        redirectParam &&
+        redirectParam.startsWith("/") &&
+        !redirectParam.startsWith("//") &&
+        redirectParam !== "/sign-in"
+          ? redirectParam
+          : "/";
+
       toast.success("Signed in successfully. Welcome back!");
-      router.push("/");
+      router.push(redirectTo);
       router.refresh();
     } catch {
       toast.error(

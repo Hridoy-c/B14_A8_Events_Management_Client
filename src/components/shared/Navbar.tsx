@@ -2,16 +2,56 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CalendarDays,
+  CalendarRange,
+  ChevronDown,
   LogIn,
+  LogOut,
   Menu,
+  Plus,
+  Ticket,
   X,
 } from "lucide-react";
+import { toast } from "react-toastify";
+
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const accountLinks = [
+  { href: "/create-event", label: "Create Event", icon: Plus },
+  { href: "/manage-events", label: "Manage Events", icon: CalendarRange },
+  { href: "/joined-events", label: "Joined Events", icon: Ticket },
+];
+
+function getInitials(name?: string | null, email?: string | null) {
+  const trimmedName = name?.trim();
+
+  if (trimmedName) {
+    const parts = trimmedName.split(/\s+/);
+    const first = parts[0]?.[0] ?? "";
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+    return `${first}${last}`.toUpperCase() || "?";
+  }
+
+  return (email?.trim()[0] ?? "?").toUpperCase();
+}
 
 export default function Navbar() {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Monitor scroll for dynamic elevation styling
   useEffect(() => {
@@ -25,6 +65,38 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+  const displayName =
+    user?.name?.trim() || user?.email?.split("@")[0] || "EventPulse member";
+  const initials = getInitials(user?.name, user?.email);
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+
+    try {
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        toast.error(
+          error.message || "We couldn't log you out. Please try again."
+        );
+        return;
+      }
+
+      setIsMobileMenuOpen(false);
+      toast.success("You've been logged out.");
+      router.push("/");
+      router.refresh();
+    } catch {
+      toast.error("We couldn't log you out. Please try again.");
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   return (
     <>
@@ -120,24 +192,112 @@ export default function Navbar() {
               </Link>
             </nav>
 
-            {/* 3. LOGIN BUTTON & MOBILE MENU TOGGLE */}
-            <div className="flex items-center gap-3">
-              {/* Login Button: goes to the /sign-in page */}
-              <Link
-                href="/sign-in"
-                className="relative group inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white overflow-hidden shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 active:scale-95 cursor-pointer"
-              >
-                {/* Background Gradient using Primary (Indigo) & Secondary (Coral Rose) */}
-                <span className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 group-hover:opacity-95 transition-opacity" />
+            {/* 3. AUTH AREA & MOBILE MENU TOGGLE */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {isPending ? (
+                <div
+                  className="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-800 animate-pulse"
+                  aria-hidden="true"
+                />
+              ) : user ? (
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className="group relative flex items-center gap-1 rounded-full p-0.5 outline-none transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
+                      aria-label={`Open profile menu for ${displayName}`}
+                      title={displayName}
+                    >
+                      <Avatar
+                        size="lg"
+                        className="h-10 w-10 ring-2 ring-indigo-500/30 shadow-md shadow-indigo-500/10"
+                      >
+                        {user.image ? (
+                          <AvatarImage src={user.image} alt={displayName} />
+                        ) : null}
+                        <AvatarFallback className="bg-gradient-to-br from-indigo-600 via-purple-600 to-rose-500 text-sm font-bold text-white">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
 
-                {/* Subtle Shimmer Sweep on Hover */}
-                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+                      <ChevronDown className="h-3.5 w-3.5 text-slate-500 transition-transform duration-200 group-data-[popup-open]:rotate-180 dark:text-slate-400" />
 
-                <span className="relative flex items-center gap-2">
-                  <LogIn className="h-4 w-4" />
-                  <span>Login</span>
-                </span>
-              </Link>
+                      {/* Display name shown on hover / keyboard focus */}
+                      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 group-data-[popup-open]:opacity-0 dark:bg-white dark:text-slate-900">
+                        {displayName}
+                      </span>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      sideOffset={12}
+                      className="w-64 min-w-64 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-xl shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900"
+                    >
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="px-2.5 py-2">
+                          <span className="block truncate text-sm font-semibold text-slate-900 dark:text-white">
+                            {displayName}
+                          </span>
+                          <span className="block truncate text-xs font-normal text-slate-500 dark:text-slate-400">
+                            {user.email}
+                          </span>
+                        </DropdownMenuLabel>
+                      </DropdownMenuGroup>
+
+                      <DropdownMenuSeparator />
+
+                      {accountLinks.map(({ href, label, icon: Icon }) => (
+                        <DropdownMenuItem
+                          key={href}
+                          render={<Link href={href} />}
+                          className="cursor-pointer gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium text-slate-700 focus:bg-indigo-50 focus:text-indigo-700 dark:text-slate-200 dark:focus:bg-indigo-950/50 dark:focus:text-indigo-300"
+                        >
+                          <Icon className="h-4 w-4 text-indigo-500" />
+                          {label}
+                        </DropdownMenuItem>
+                      ))}
+
+                      <DropdownMenuSeparator />
+
+                      <DropdownMenuItem
+                        variant="destructive"
+                        disabled={isSigningOut}
+                        onClick={handleSignOut}
+                        className="cursor-pointer gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        {isSigningOut ? "Logging out..." : "Logout"}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Visible Logout button next to the profile picture */}
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                    className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-rose-900/70 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    {isSigningOut ? "..." : "Logout"}
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="relative group inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white overflow-hidden shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 active:scale-95 cursor-pointer"
+                >
+                  {/* Background Gradient using Primary (Indigo) & Secondary (Coral Rose) */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 group-hover:opacity-95 transition-opacity" />
+
+                  {/* Subtle Shimmer Sweep on Hover */}
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+
+                  <span className="relative flex items-center gap-2">
+                    <LogIn className="h-4 w-4" />
+                    <span>Login</span>
+                  </span>
+                </Link>
+              )}
 
               {/* Mobile Menu Hamburger Button */}
               <button
@@ -177,15 +337,68 @@ export default function Navbar() {
               </span>
             </Link>
 
-            {/* Mobile Login Link */}
-            <Link
-              href="/sign-in"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Login to EventPulse</span>
-            </Link>
+            {user ? (
+              <div className="space-y-3">
+                {/* Signed-in user card */}
+                <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-900">
+                  <Avatar
+                    size="lg"
+                    className="ring-2 ring-indigo-500/30"
+                  >
+                    {user.image ? (
+                      <AvatarImage src={user.image} alt={displayName} />
+                    ) : null}
+                    <AvatarFallback className="bg-gradient-to-br from-indigo-600 via-purple-600 to-rose-500 text-sm font-bold text-white">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                      {displayName}
+                    </p>
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Protected account links */}
+                <div className="grid gap-2">
+                  {accountLinks.map(({ href, label, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-indigo-900 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  disabled={isSigningOut}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 font-semibold text-sm transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-900/70 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-950/50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  {isSigningOut ? "Logging out..." : "Logout"}
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/sign-in"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 active:scale-[0.98] transition-all cursor-pointer"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>Login to EventPulse</span>
+              </Link>
+            )}
           </div>
         )}
       </header>
