@@ -76,24 +76,24 @@ export default function AuthDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[420px] w-full rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xl z-[100] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <DialogContent className="sm:max-w-[420px] w-full rounded-2xl bg-white/95 dark:bg-pine-900/95 backdrop-blur-2xl border border-pine-200/80 dark:border-pine-800 p-5 sm:p-6 shadow-2xl z-[100] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {/* Ambient Top Glow */}
-        <div className="absolute -top-16 -right-16 h-36 w-36 rounded-full bg-gradient-to-br from-indigo-500/20 to-rose-500/20 blur-2xl pointer-events-none" />
+        <div className="absolute -top-16 -right-16 h-36 w-36 rounded-full bg-gradient-to-br from-forest-500/20 to-sage-500/20 blur-2xl pointer-events-none" />
 
         {/* Dialog Header */}
         <DialogHeader className="text-center sm:text-center space-y-0.5">
           <div className="flex justify-center mb-0.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900 shadow-xs">
-              <Sparkles className="h-3 w-3 text-rose-500" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-forest-50 dark:bg-forest-950/60 text-forest-600 dark:text-forest-400 border border-forest-100 dark:border-forest-900 shadow-xs">
+              <Sparkles className="h-3 w-3 text-sage-500" />
               EventPulse Passport
             </span>
           </div>
 
-          <DialogTitle className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-heading">
+          <DialogTitle className="text-xl sm:text-2xl font-extrabold tracking-tight text-pine-900 dark:text-white font-heading">
             {mode === "sign-in" ? "Welcome back" : "Create an account"}
           </DialogTitle>
 
-          <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+          <DialogDescription className="text-xs text-pine-500 dark:text-pine-400">
             {mode === "sign-in"
               ? "Sign in to access your event passes and tickets"
               : "Discover and book unforgettable live experiences"}
@@ -105,7 +105,7 @@ export default function AuthDialog({
           <Button
             type="button"
             variant="outline"
-            className="h-9 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium text-xs"
+            className="h-9 rounded-xl border-pine-200 dark:border-pine-800 hover:bg-pine-50 dark:hover:bg-pine-800/60 font-medium text-xs"
           >
             <svg className="h-3.5 w-3.5 mr-2" viewBox="0 0 24 24">
               <path
@@ -131,7 +131,7 @@ export default function AuthDialog({
           <Button
             type="button"
             variant="outline"
-            className="h-9 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium text-xs"
+            className="h-9 rounded-xl border-pine-200 dark:border-pine-800 hover:bg-pine-50 dark:hover:bg-pine-800/60 font-medium text-xs"
           >
             <svg className="h-3.5 w-3.5 mr-2 fill-current" viewBox="0 0 24 24">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
@@ -142,11 +142,11 @@ export default function AuthDialog({
 
         {/* Divider */}
         <div className="relative my-1.5 flex items-center">
-          <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
-          <span className="mx-2.5 flex-shrink text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+          <div className="flex-grow border-t border-pine-200 dark:border-pine-800" />
+          <span className="mx-2.5 flex-shrink text-[10px] uppercase tracking-wider text-pine-400 font-semibold">
             {mode === "sign-in" ? "Or with email" : "Or with email"}
           </span>
-          <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
+          <div className="flex-grow border-t border-pine-200 dark:border-pine-800" />
         </div>
 
         {/* Form without internal scroll */}
@@ -156,12 +156,12 @@ export default function AuthDialog({
             <div className="space-y-1">
               <Label
                 htmlFor="dialog-name"
-                className="text-[11px] font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                className="text-[11px] font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
               >
                 Full Name
               </Label>
               <div className="relative">
-                <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-pine-400" />
                 <Input
                   id="dialog-name"
                   type="text"
@@ -169,7 +169,7 @@ export default function AuthDialog({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Alex Morgan"
-                  className="pl-9 h-9 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs focus-visible:ring-indigo-500"
+                  className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
                 />
               </div>
             </div>
@@ -179,12 +179,12 @@ export default function AuthDialog({
           <div className="space-y-1">
             <Label
               htmlFor="dialog-email"
-              className="text-[11px] font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+              className="text-[11px] font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
             >
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+              <Mail className="absolute left-3 top-2.5 h-3.5 w-3.5 text-pine-400" />
               <Input
                 id="dialog-email"
                 type="email"
@@ -192,7 +192,7 @@ export default function AuthDialog({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="pl-9 h-9 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs focus-visible:ring-indigo-500"
+                className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
               />
             </div>
           </div>
@@ -202,19 +202,19 @@ export default function AuthDialog({
             <div className="space-y-1">
               <Label
                 htmlFor="dialog-image"
-                className="text-[11px] font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                className="text-[11px] font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
               >
                 Profile Image URL
               </Label>
               <div className="relative">
-                <ImageIcon className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                <ImageIcon className="absolute left-3 top-2.5 h-3.5 w-3.5 text-pine-400" />
                 <Input
                   id="dialog-image"
                   type="url"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="https://example.com/avatar.jpg"
-                  className="pl-9 h-9 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs focus-visible:ring-indigo-500"
+                  className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
                 />
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function AuthDialog({
             <div className="flex items-center justify-between">
               <Label
                 htmlFor="dialog-password"
-                className="text-[11px] font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                className="text-[11px] font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
               >
                 Password
               </Label>
@@ -236,14 +236,14 @@ export default function AuthDialog({
                     e.preventDefault();
                     alert("Password reset instructions sent to your email!");
                   }}
-                  className="text-[11px] font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                  className="text-[11px] font-medium text-forest-600 hover:text-forest-500 dark:text-forest-400"
                 >
                   Forgot?
                 </a>
               )}
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-pine-400" />
               <Input
                 id="dialog-password"
                 type={showPassword ? "text" : "password"}
@@ -251,12 +251,12 @@ export default function AuthDialog({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="pl-9 pr-9 h-9 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs focus-visible:ring-indigo-500"
+                className="pl-9 pr-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                className="absolute right-2.5 top-2 text-pine-400 hover:text-pine-600 dark:hover:text-pine-200 transition-colors cursor-pointer"
               >
                 {showPassword ? (
                   <EyeOff className="h-3.5 w-3.5" />
@@ -277,7 +277,7 @@ export default function AuthDialog({
               />
               <Label
                 htmlFor="dialog-remember"
-                className="text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer font-normal"
+                className="text-[11px] text-pine-600 dark:text-pine-400 cursor-pointer font-normal"
               >
                 Remember me on this device
               </Label>
@@ -292,14 +292,14 @@ export default function AuthDialog({
               />
               <Label
                 htmlFor="dialog-terms"
-                className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight cursor-pointer font-normal"
+                className="text-[11px] text-pine-600 dark:text-pine-400 leading-tight cursor-pointer font-normal"
               >
                 I agree to the{" "}
-                <span className="text-indigo-600 dark:text-indigo-400 font-semibold underline">
+                <span className="text-forest-600 dark:text-forest-400 font-semibold underline">
                   Terms
                 </span>{" "}
                 &{" "}
-                <span className="text-indigo-600 dark:text-indigo-400 font-semibold underline">
+                <span className="text-forest-600 dark:text-forest-400 font-semibold underline">
                   Privacy
                 </span>
                 .
@@ -311,7 +311,7 @@ export default function AuthDialog({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full h-10 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 hover:opacity-95 text-white font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 mt-1.5"
+            className="w-full h-10 rounded-xl bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 hover:opacity-95 text-white font-semibold text-xs sm:text-sm shadow-md shadow-forest-500/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 mt-1.5"
           >
             {mode === "sign-in" ? (
               <>
@@ -329,15 +329,15 @@ export default function AuthDialog({
         </form>
 
         {/* Footer Toggle Shifted Upward */}
-        <div className="pt-2 text-center border-t border-slate-100 dark:border-slate-800 -mb-1">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="pt-2 text-center border-t border-pine-100 dark:border-pine-800 -mb-1">
+          <p className="text-xs text-pine-500 dark:text-pine-400">
             {mode === "sign-in"
               ? "Don't have an account yet? "
               : "Already have an account? "}
             <button
               type="button"
               onClick={() => setMode(mode === "sign-in" ? "sign-up" : "sign-in")}
-              className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer inline-flex items-center gap-0.5 ml-1"
+              className="font-bold text-forest-600 dark:text-forest-400 hover:underline cursor-pointer inline-flex items-center gap-0.5 ml-1"
             >
               {mode === "sign-in" ? "Register now" : "Sign In"}
             </button>

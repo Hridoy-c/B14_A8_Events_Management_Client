@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "@/lib/toast";
 
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -38,7 +38,7 @@ export default function SocialAuthButtons() {
         variant="outline"
         onClick={() => handleSocialSignIn("google")}
         disabled={loadingProvider !== null}
-        className="h-10 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium text-xs sm:text-sm"
+        className="h-10 rounded-xl border-pine-200 dark:border-pine-800 hover:bg-pine-50 dark:hover:bg-pine-800/60 font-medium text-xs sm:text-sm"
       >
         {loadingProvider === "google" ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -74,7 +74,7 @@ export default function SocialAuthButtons() {
         variant="outline"
         onClick={() => handleSocialSignIn("github")}
         disabled={loadingProvider !== null}
-        className="h-10 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium text-xs sm:text-sm"
+        className="h-10 rounded-xl border-pine-200 dark:border-pine-800 hover:bg-pine-50 dark:hover:bg-pine-800/60 font-medium text-xs sm:text-sm"
       >
         {loadingProvider === "github" ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

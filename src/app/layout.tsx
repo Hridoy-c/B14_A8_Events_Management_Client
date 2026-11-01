@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Poppins, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 import ToastProvider from "@/components/shared/ToastProvider";
 
 
-const outfit = Outfit({
+const poppins = Poppins({
   variable: "--font-heading",
   subsets: ["latin"],
   display: "swap",
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${plusJakartaSans.variable} h-full antialiased`}
+      className={`${poppins.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body
         id="top"
@@ -43,7 +43,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
-        <ToastProvider position="top-center" autoClose={3000} />
+        <ToastProvider />
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ import RecentUpcomingEvents from "@/components/home/RecentUpcomingEvents";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
+    <div className="min-h-screen bg-transparent dark:bg-pine-950">
       {/* HERO BANNER SECTION */}
       <Banner />
 

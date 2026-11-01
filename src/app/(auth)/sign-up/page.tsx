@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
-import { toast } from "react-toastify";
+import { toast } from "@/lib/toast";
 
 function getAuthErrorMessage(
   error: { code?: string; message?: string } | null
@@ -206,30 +206,30 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-slate-50/50 dark:bg-slate-950 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-pine-50/50 dark:bg-pine-950 relative overflow-hidden">
 
       {/* Background Effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-indigo-500/15 via-purple-500/10 to-rose-500/15 blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-forest-500/15 via-sage-500/10 to-sage-500/15 blur-3xl pointer-events-none rounded-full" />
 
-      <div className="absolute bottom-10 left-10 w-72 h-72 bg-indigo-500/10 blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute bottom-10 left-10 w-72 h-72 bg-forest-500/10 blur-3xl pointer-events-none rounded-full" />
 
       <div className="w-full max-w-md relative z-10">
 
         {/* Signup Card */}
-        <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl shadow-indigo-950/5 p-6 sm:p-8">
+        <Card className="rounded-2xl border border-pine-200/80 dark:border-pine-800 bg-white/95 dark:bg-pine-900/95 backdrop-blur-xl shadow-xl shadow-forest-950/5 p-6 sm:p-8">
 
           <CardHeader className="p-0 mb-6 text-center">
             <div className="flex justify-center mb-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-rose-500 shadow-lg shadow-indigo-500/25">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-forest-600 via-sage-600 to-sage-500 shadow-lg shadow-forest-500/25">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
             </div>
 
-            <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-heading">
+            <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-pine-900 dark:text-white font-heading">
               Create Account
             </CardTitle>
 
-            <CardDescription className="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+            <CardDescription className="text-sm text-pine-500 dark:text-pine-400 mt-1.5">
               Join the community and start driving social change
             </CardDescription>
           </CardHeader>
@@ -260,7 +260,7 @@ export default function SignUpPage() {
                 </Label>
 
                 <div className="relative">
-                  <User className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
 
                   <Input
                     id="name"
@@ -281,10 +281,10 @@ export default function SignUpPage() {
                     aria-describedby={
                       showError("name") ? "name-error" : undefined
                     }
-                    className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("name")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800"
+                        : "border-pine-200 dark:border-pine-800"
                     }`}
                   />
                 </div>
@@ -306,7 +306,7 @@ export default function SignUpPage() {
                 </Label>
 
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
 
                   <Input
                     id="email"
@@ -328,10 +328,10 @@ export default function SignUpPage() {
                     aria-describedby={
                       showError("email") ? "email-error" : undefined
                     }
-                    className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("email")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800"
+                        : "border-pine-200 dark:border-pine-800"
                     }`}
                   />
                 </div>
@@ -353,7 +353,7 @@ export default function SignUpPage() {
                 </Label>
 
                 <div className="relative">
-                  <ImageIcon className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <ImageIcon className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
 
                   <Input
                     id="image"
@@ -376,10 +376,10 @@ export default function SignUpPage() {
                         ? "image-error"
                         : "image-hint"
                     }
-                    className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("imageUrl")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800"
+                        : "border-pine-200 dark:border-pine-800"
                     }`}
                   />
                 </div>
@@ -391,7 +391,7 @@ export default function SignUpPage() {
                 ) : (
                   <p
                     id="image-hint"
-                    className="text-[11px] text-slate-400"
+                    className="text-[11px] text-pine-400"
                   >
                     Optional: Leave empty for default avatar.
                   </p>
@@ -408,7 +408,7 @@ export default function SignUpPage() {
                 </Label>
 
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
 
                   <Input
                     id="password"
@@ -431,10 +431,10 @@ export default function SignUpPage() {
                         ? "password-rules password-error"
                         : "password-rules"
                     }
-                    className={`pl-10 pr-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 pr-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("password")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800"
+                        : "border-pine-200 dark:border-pine-800"
                     }`}
                   />
 
@@ -444,7 +444,7 @@ export default function SignUpPage() {
                     onClick={() =>
                       setShowPassword(!showPassword)
                     }
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    className="absolute right-3 top-2.5 text-pine-400 hover:text-pine-600 dark:hover:text-pine-200 transition-colors"
                     aria-label={
                       showPassword
                         ? "Hide password"
@@ -470,18 +470,18 @@ export default function SignUpPage() {
                       key={rule.label}
                       className={`flex items-center gap-2 text-[11px] transition-colors duration-200 ${
                         rule.valid
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-slate-500 dark:text-slate-400"
+                          ? "text-sage-600 dark:text-sage-400"
+                          : "text-pine-500 dark:text-pine-400"
                       }`}
                     >
                       {rule.valid ? (
                         <Check
-                          className="h-3.5 w-3.5 shrink-0 text-emerald-500"
+                          className="h-3.5 w-3.5 shrink-0 text-sage-500"
                           strokeWidth={2.5}
                         />
                       ) : (
                         <X
-                          className="h-3.5 w-3.5 shrink-0 text-slate-300 dark:text-slate-600"
+                          className="h-3.5 w-3.5 shrink-0 text-pine-300 dark:text-pine-600"
                           strokeWidth={2.5}
                         />
                       )}
@@ -518,19 +518,19 @@ export default function SignUpPage() {
 
                   <Label
                     htmlFor="terms"
-                    className="text-xs text-slate-600 dark:text-slate-400 leading-snug cursor-pointer font-normal"
+                    className="text-xs text-pine-600 dark:text-pine-400 leading-snug cursor-pointer font-normal"
                   >
                     I agree to the{" "}
                     <Link
                       href="/terms"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                      className="text-forest-600 dark:text-forest-400 hover:underline font-semibold"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/privacy"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                      className="text-forest-600 dark:text-forest-400 hover:underline font-semibold"
                     >
                       Privacy Policy
                     </Link>
@@ -559,7 +559,7 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 hover:opacity-95 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 hover:opacity-95 text-white font-semibold text-sm shadow-md shadow-forest-500/20 hover:shadow-forest-500/40 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <span>
                   {isLoading ? "Registering..." : "Register"}
@@ -572,12 +572,12 @@ export default function SignUpPage() {
           </CardContent>
 
           {/* Login Link */}
-          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-slate-100 dark:border-slate-800 justify-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-pine-100 dark:border-pine-800 justify-center">
+            <p className="text-xs text-pine-500 dark:text-pine-400">
               Already have an account?{" "}
               <Link
                 href="/sign-in"
-                className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="font-bold text-forest-600 dark:text-forest-400 hover:underline"
               >
                 Login here
               </Link>

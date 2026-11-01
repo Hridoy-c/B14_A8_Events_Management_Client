@@ -4,23 +4,26 @@
 
 ---
 
-### 1. Typography & Main Headings
+### 1. Typography, Brand Palette & Main Headings
+- **Color Combo**: Use only the forest → sage → mint ramp below. No indigo, purple, rose, or teal accents.
+  - `#051F20` (deepest), `#0B2B26`, `#163832`, `#235347`, `#8EB69B`, `#DAF1DE` (lightest)
+  - Exposed as Tailwind scales: `forest-*` (brand), `sage-*` (accent), `pine-*` (neutral text, borders, surfaces).
 - **Heading Consistency**: Keep the main heading style (font, size, weight, color) identical across all sections.
-  - **Font**: `Outfit` (`var(--font-heading)`)
-  - **Style/Size**: `text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white`
-  - **Accent**: Gradient accent text `bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 bg-clip-text text-transparent`
+  - **Font**: `Poppins` (`var(--font-heading)`)
+  - **Style/Size**: `text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-pine-900 dark:text-white`
+  - **Accent**: Gradient accent text `bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 bg-clip-text text-transparent`
 - **Paragraphs & Body Text**:
   - Balanced paragraph spacing with high readability.
   - **Font**: `Plus Jakarta Sans` (`var(--font-sans)`)
-  - Text color: `text-slate-600 dark:text-slate-400`
+  - Text color: `text-pine-600 dark:text-pine-400`
   - Line height: `leading-relaxed`
 
 ---
 
 ### 2. Button Styling
 - **Uniform Button Style**: Use the exact same button styling everywhere as on the home page:
-  - **Primary CTA**: `px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:opacity-95 active:scale-95 transition-all`
-  - **Secondary / Ghost**: `px-5 py-2.5 rounded-full text-sm font-semibold border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all`
+  - **Primary CTA**: `px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 shadow-md shadow-forest-500/20 hover:shadow-forest-500/40 hover:opacity-95 active:scale-95 transition-all`
+  - **Secondary / Ghost**: `px-5 py-2.5 rounded-full text-sm font-semibold border border-pine-200 dark:border-pine-800 text-pine-700 dark:text-pine-200 hover:bg-pine-100 dark:hover:bg-pine-800 transition-all`
 
 ---
 

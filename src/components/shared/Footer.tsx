@@ -87,7 +87,7 @@ function FooterColumn({
     <nav aria-labelledby={id}>
       <h3
         id={id}
-        className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        className="text-xs font-semibold uppercase tracking-[0.18em] text-pine-400"
       >
         {title}
       </h3>
@@ -96,7 +96,7 @@ function FooterColumn({
           <li key={link.label}>
             <Link
               href={link.href}
-              className="group inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-none"
+              className="group inline-flex items-center gap-1.5 text-sm text-pine-400 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-none"
             >
               {link.label}
               <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -112,22 +112,22 @@ export default function Footer() {
   return (
     <footer
       id="site-footer"
-      className="relative overflow-hidden border-t border-white/10 bg-slate-950 text-slate-300"
+      className="relative overflow-hidden border-t border-white/10 bg-pine-950 text-pine-300"
     >
       {/* Brand gradient hairline */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-forest-500 via-sage-400 to-sage-200"
       />
 
       {/* Ambient accents */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl"
+        className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-forest-500/20 blur-3xl"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-rose-500/10 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-sage-500/15 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -139,8 +139,8 @@ export default function Footer() {
               aria-label="EventPulse Home"
               className="group inline-flex items-center gap-3"
             >
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-rose-500 p-0.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 group-hover:scale-105 group-hover:shadow-indigo-500/40">
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[14px] bg-slate-950">
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-sage-300 via-sage-500 to-forest-700 p-0.5 shadow-lg shadow-forest-950/40 transition-all duration-300 group-hover:scale-105 group-hover:shadow-sage-500/30">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[14px] bg-pine-950">
                   <svg
                     viewBox="0 0 32 32"
                     fill="none"
@@ -155,9 +155,9 @@ export default function Footer() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
-                    <circle cx="18" cy="8" r="2.5" fill="#F43F5E" />
-                    <circle cx="10" cy="12" r="1.5" fill="#6366F1" />
-                    <circle cx="26" cy="12" r="1.5" fill="#F43F5E" />
+                    <circle cx="18" cy="8" r="2.5" fill="#DAF1DE" />
+                    <circle cx="10" cy="12" r="1.5" fill="#8EB69B" />
+                    <circle cx="26" cy="12" r="1.5" fill="#DAF1DE" />
                     <defs>
                       <linearGradient
                         id="footer-pulse-gradient"
@@ -167,44 +167,44 @@ export default function Footer() {
                         y2="14"
                         gradientUnits="userSpaceOnUse"
                       >
-                        <stop stopColor="#6366F1" />
-                        <stop offset="0.5" stopColor="#A855F7" />
-                        <stop offset="1" stopColor="#F43F5E" />
+                        <stop stopColor="#8EB69B" />
+                        <stop offset="0.5" stopColor="#DAF1DE" />
+                        <stop offset="1" stopColor="#DAF1DE" />
                       </linearGradient>
                     </defs>
                   </svg>
                 </div>
 
                 <span className="absolute -right-1 -top-1 flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-slate-950 bg-rose-500" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-pine-950 bg-sage-500" />
                 </span>
               </div>
 
               <span className="font-heading text-2xl font-extrabold tracking-tight text-white">
                 Event
-                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-rose-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-sage-200 via-sage-300 to-sage-400 bg-clip-text text-transparent">
                   Pulse
                 </span>
               </span>
             </Link>
 
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-slate-400">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-pine-400">
               A community-first event platform for the people who show up.
               Discover local events, organize with neighbors, and keep the
               causes you care about close.
             </p>
 
-            <div className="mt-5 space-y-2.5 text-sm text-slate-400">
+            <div className="mt-5 space-y-2.5 text-sm text-pine-400">
               <a
                 href="mailto:hello@eventpulse.app"
                 className="inline-flex items-center gap-2 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-none"
               >
-                <Mail className="h-4 w-4 shrink-0 text-indigo-400" />
+                <Mail className="h-4 w-4 shrink-0 text-forest-400" />
                 hello@eventpulse.app
               </a>
               <p className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-rose-400" />
+                <MapPin className="h-4 w-4 shrink-0 text-sage-400" />
                 Dhaka, Bangladesh
               </p>
             </div>
@@ -217,7 +217,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${social.label} (opens in a new tab)`}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-pine-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-400"
                 >
                   {social.icon}
                 </a>
@@ -240,7 +240,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col gap-4 border-t border-white/10 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-white/10 py-6 text-xs text-pine-400 sm:flex-row sm:items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} EventPulse. Built for neighbors
             who show up.
@@ -251,7 +251,7 @@ export default function Footer() {
               <li key={link.label}>
                 <Link
                   href={link.href}
-                  className="transition-colors hover:text-slate-200 focus-visible:text-slate-200 focus-visible:outline-none"
+                  className="transition-colors hover:text-pine-200 focus-visible:text-pine-200 focus-visible:outline-none"
                 >
                   {link.label}
                 </Link>

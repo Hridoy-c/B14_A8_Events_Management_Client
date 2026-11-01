@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
-import { toast } from "react-toastify";
+import { toast } from "@/lib/toast";
 
 function getSignInErrorMessage(
   error: { code?: string; message?: string } | null
@@ -119,27 +119,27 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-slate-50/50 dark:bg-slate-950 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-pine-50/50 dark:bg-pine-950 relative overflow-hidden">
       {/* Decorative ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-indigo-500/15 via-purple-500/10 to-rose-500/15 blur-3xl pointer-events-none rounded-full" />
-      <div className="absolute bottom-10 right-10 w-72 h-72 bg-rose-500/10 blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-forest-500/15 via-sage-500/10 to-sage-500/15 blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-sage-500/10 blur-3xl pointer-events-none rounded-full" />
 
       <div className="w-full max-w-md relative z-10 space-y-6">
         {/* Brand Badge */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900 mb-3 shadow-xs">
-            <Sparkles className="h-3.5 w-3.5 text-rose-500" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-forest-50 dark:bg-forest-950/60 text-forest-600 dark:text-forest-400 border border-forest-100 dark:border-forest-900 mb-3 shadow-xs">
+            <Sparkles className="h-3.5 w-3.5 text-sage-500" />
             EventPulse Passport
           </div>
         </div>
 
         {/* Shadcn Card for Sign In */}
-        <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl shadow-indigo-950/5 p-6 sm:p-8">
+        <Card className="rounded-2xl border border-pine-200/80 dark:border-pine-800 bg-white/95 dark:bg-pine-900/95 backdrop-blur-xl shadow-xl shadow-forest-950/5 p-6 sm:p-8">
           <CardHeader className="p-0 mb-6 text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-heading">
+            <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-pine-900 dark:text-white font-heading">
               Welcome back
             </CardTitle>
-            <CardDescription className="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+            <CardDescription className="text-sm text-pine-500 dark:text-pine-400 mt-1.5">
               Sign in to manage your tickets, bookings, and live events
             </CardDescription>
           </CardHeader>
@@ -150,11 +150,11 @@ export default function SignInPage() {
 
             {/* Divider */}
             <div className="relative my-4 flex items-center">
-              <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
-              <span className="mx-3 flex-shrink text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              <div className="flex-grow border-t border-pine-200 dark:border-pine-800" />
+              <span className="mx-3 flex-shrink text-[11px] uppercase tracking-wider text-pine-400 font-semibold">
                 Or continue with email
               </span>
-              <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
+              <div className="flex-grow border-t border-pine-200 dark:border-pine-800" />
             </div>
 
             {/* Email Form */}
@@ -162,12 +162,12 @@ export default function SignInPage() {
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
-                  className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                  className="text-xs font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
                 >
                   Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
                   <Input
                     id="email"
                     type="email"
@@ -184,10 +184,10 @@ export default function SignInPage() {
                     aria-describedby={
                       showError("email") ? "signin-email-error" : undefined
                     }
-                    className={`pl-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("email")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800 focus-visible:ring-indigo-500"
+                        : "border-pine-200 dark:border-pine-800 focus-visible:ring-forest-500"
                     }`}
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function SignInPage() {
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="password"
-                    className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                    className="text-xs font-semibold uppercase tracking-wider text-pine-700 dark:text-pine-300"
                   >
                     Password
                   </Label>
@@ -218,13 +218,13 @@ export default function SignInPage() {
                         "Password reset instructions sent to your email!"
                       );
                     }}
-                    className="text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                    className="text-xs font-medium text-forest-600 hover:text-forest-500 dark:text-forest-400"
                   >
                     Forgot password?
                   </a>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3.5 top-2.5 h-4 w-4 text-pine-400" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -242,10 +242,10 @@ export default function SignInPage() {
                         ? "signin-password-error"
                         : undefined
                     }
-                    className={`pl-10 pr-10 h-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/40 text-sm ${
+                    className={`pl-10 pr-10 h-10 rounded-xl bg-pine-50/50 dark:bg-pine-800/40 text-sm ${
                       showError("password")
                         ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-200 dark:border-slate-800 focus-visible:ring-indigo-500"
+                        : "border-pine-200 dark:border-pine-800 focus-visible:ring-forest-500"
                     }`}
                   />
                   <button
@@ -254,7 +254,7 @@ export default function SignInPage() {
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    className="absolute right-3 top-2.5 text-pine-400 hover:text-pine-600 dark:hover:text-pine-200 transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -283,7 +283,7 @@ export default function SignInPage() {
                 />
                 <Label
                   htmlFor="remember"
-                  className="text-xs text-slate-600 dark:text-slate-400 cursor-pointer"
+                  className="text-xs text-pine-600 dark:text-pine-400 cursor-pointer"
                 >
                   Remember me on this device
                 </Label>
@@ -293,7 +293,7 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 hover:opacity-95 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 hover:opacity-95 text-white font-semibold text-sm shadow-md shadow-forest-500/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>{isLoading ? "Signing in..." : "Sign In to EventPulse"}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -301,12 +301,12 @@ export default function SignInPage() {
             </form>
           </CardContent>
 
-          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-slate-100 dark:border-slate-800 justify-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+          <CardFooter className="p-0 mt-6 pt-5 pb-5 border-t border-pine-100 dark:border-pine-800 justify-center">
+            <p className="text-xs text-pine-500 dark:text-pine-400">
               Don&apos;t have an account yet?{" "}
               <Link
                 href="/sign-up"
-                className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="font-bold text-forest-600 dark:text-forest-400 hover:underline"
               >
                 Create free account
               </Link>
