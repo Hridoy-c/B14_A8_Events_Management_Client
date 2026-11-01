@@ -12,7 +12,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/lib/toast";
 
@@ -32,9 +31,12 @@ const DeleteBtn = ({ id, title, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/all-events/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (!res.ok) throw new Error("Delete failed");
 
       onDeleted();
@@ -49,39 +51,41 @@ const DeleteBtn = ({ id, title, onDeleted }: Props) => {
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center gap-1.5 rounded-full bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-          Delete
-        </button>
-      </AlertDialogTrigger>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+        Delete
+      </button>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="font-heading text-pine-900 dark:text-white">
-            Delete this event?
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-pine-600 dark:text-pine-400">
-            &quot;{title}&quot; will be permanently removed. This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-heading text-pine-900 dark:text-white">
+              Delete this event?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-pine-600 dark:text-pine-400">
+              &quot;{title}&quot; will be permanently removed. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="bg-red-600 text-white hover:bg-red-700"
-          >
-            {isDeleting ? "Deleting..." : "Yes, delete"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {isDeleting ? "Deleting..." : "Yes, delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

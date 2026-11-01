@@ -17,6 +17,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
 
 type EventItem = {
@@ -40,6 +41,8 @@ const guidelines = [
 
 export default function EventDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,15 +63,39 @@ export default function EventDetailsPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleJoin = () => {
-    if (joined) {
-      setJoined(false);
-      setVolunteers((v) => Math.max(0, v - 1));
-      toast.success("You left this event.");
-    } else {
+  const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!user) {
+      toast.error("Please sign in to join this event.");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    const submitted = Object.fromEntries(formData.entries());
+    console.log("Joining event with data:", submitted);
+    
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/joined-events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitted),
+      });
+
+      if (res.status === 409) {
+        setJoined(true);
+        toast.error("You have already joined this event.");
+        return;
+      }
+      if (!res.ok) throw new Error("Join failed");
+
       setJoined(true);
       setVolunteers((v) => v + 1);
       toast.success("You joined this event!", "Thank you for volunteering.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not join the event. Please try again.");
     }
   };
 
@@ -172,7 +199,12 @@ export default function EventDetailsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <form onSubmit={handleJoin} className="flex items-center gap-2">
+              <input type="hidden" name="eventId" value={event._id} />
+              <input type="hidden" name="eventTitle" value={event.title} />
+              <input type="hidden" name="userName" value={user?.name ?? ""} />
+              <input type="hidden" name="userEmail" value={user?.email ?? ""} />
+
               <button
                 type="button"
                 onClick={handleShare}
@@ -183,11 +215,11 @@ export default function EventDetailsPage() {
               </button>
 
               <button
-                type="button"
-                onClick={handleJoin}
+                type="submit"
+                disabled={joined}
                 className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all active:scale-95 sm:flex-none ${
                   joined
-                    ? "border border-forest-600 bg-white text-forest-700 hover:bg-sage-50 dark:bg-pine-900 dark:text-sage-300"
+                    ? "cursor-default border border-forest-600 bg-white text-forest-700 dark:bg-pine-900 dark:text-sage-300"
                     : "bg-gradient-to-r from-forest-600 via-sage-600 to-sage-500 text-white shadow-md shadow-forest-500/20 hover:opacity-95 hover:shadow-forest-500/40"
                 }`}
               >
@@ -203,7 +235,7 @@ export default function EventDetailsPage() {
                   </>
                 )}
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Content + organizer */}
