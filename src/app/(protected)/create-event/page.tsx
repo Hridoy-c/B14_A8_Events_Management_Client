@@ -78,8 +78,9 @@ function toISODate(date: Date) {
 }
 
 export default function CreateEventPage() {
-  const { data: session } = authClient.useSession();
-  const organizerEmail = session?.user?.email ?? "organizer@eventpulse.app";
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const user = session?.user ?? null;
+  const organizerEmail = user?.email ?? "";
 
   const [form, setForm] = useState<FormState>(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -120,15 +121,15 @@ export default function CreateEventPage() {
     return next;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-
-
-    const formData = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formData.entries())
-    
-
+    // Runs on every submit request — including invalid ones — so the log
+    // always shows up in the BROWSER console (DevTools), not the dev terminal.
+    const formData = new FormData(event.currentTarget);
+    const submitted = Object.fromEntries(formData.entries());
+   
+  
     const nextErrors = validate(form);
     setErrors(nextErrors);
 
@@ -136,19 +137,39 @@ export default function CreateEventPage() {
       toast.error("Please fix the highlighted fields.");
       return;
     }
+    const createEventDate = new Date()
+
+    const payload = {
+      ...form,
+      organizerName: user?.name ?? null,
+      organizerEmail: user?.email ?? null,
+      createEventDate: createEventDate
+    };
+    console.log("[create-event] payload ready for the API:", payload);
+
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`,{
+       method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+           
+        },
+        body: JSON.stringify(payload)
+    })
+    const result = await res.json()
+    console.log(result)
+
+
+
+
 
     setIsSubmitting(true);
 
-    // Demo flow only — replace with the create-event API call.
     setTimeout(() => {
       setIsSubmitting(false);
       setForm(emptyForm);
       toast.success("Event created!", "It now appears in Manage Events.");
     }, 700);
-
-
-
-
   };
 
   return (
@@ -196,6 +217,8 @@ export default function CreateEventPage() {
                 <Type className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-pine-400" />
                 <Input
                   id="event-title"
+                  name="title"
+
                   value={form.title}
                   onChange={(e) => update("title", e.target.value)}
                   placeholder="e.g. Winter Clothes Distribution — Mirpur 10, Dhaka"
@@ -218,6 +241,7 @@ export default function CreateEventPage() {
                   <Heart className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-pine-400" />
                   <select
                     id="event-type"
+                    name="type"
                     value={form.type}
                     onChange={(e) => update("type", e.target.value)}
                     aria-invalid={Boolean(errors.type)}
@@ -253,6 +277,7 @@ export default function CreateEventPage() {
                   <CalendarDays className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-pine-400" />
                   <Input
                     id="event-date"
+                    name="date"
                     type="date"
                     min={minDateISO}
                     value={form.date}
@@ -281,6 +306,7 @@ export default function CreateEventPage() {
                 <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-pine-400" />
                 <Input
                   id="event-location"
+                  name="location"
                   value={form.location}
                   onChange={(e) => update("location", e.target.value)}
                   placeholder="e.g. Murgapara Town Hall, Dhaka"
@@ -302,6 +328,7 @@ export default function CreateEventPage() {
                 <ImageIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-pine-400" />
                 <Input
                   id="event-image"
+                  name="image"
                   type="url"
                   inputMode="url"
                   value={form.image}
@@ -346,6 +373,7 @@ export default function CreateEventPage() {
               </Label>
               <Textarea
                 id="event-description"
+                name="description"
                 rows={5}
                 maxLength={600}
                 value={form.description}
@@ -374,9 +402,27 @@ export default function CreateEventPage() {
                 <Lock className="h-3.5 w-3.5" />
                 Organizer Email attached:
               </span>
-              <span className="truncate font-semibold text-pine-800 dark:text-pine-100">
-                {organizerEmail}
-              </span>
+              {isSessionPending ? (
+                <span className="truncate font-semibold text-pine-500 dark:text-pine-300">
+                  Checking your account…
+                </span>
+              ) : organizerEmail ? (
+                <span className="truncate font-semibold text-pine-800 dark:text-pine-100">
+                  {user?.name ? `${user.name} · ` : ""}
+                  {organizerEmail}
+                </span>
+              ) : (
+                <span className="truncate font-medium text-pine-500 dark:text-pine-400">
+                  Not signed in —{" "}
+                  <Link
+                    href="/sign-in"
+                    className="font-semibold text-forest-600 underline underline-offset-2 dark:text-sage-300"
+                  >
+                    sign in
+                  </Link>{" "}
+                  to attach your email
+                </span>
+              )}
             </div>
 
             <Button
