@@ -20,6 +20,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+
 
 const eventTypes = [
   "Food Drive",
@@ -78,6 +81,7 @@ function toISODate(date: Date) {
 }
 
 export default function CreateEventPage() {
+  const router = useRouter();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const user = session?.user ?? null;
   const organizerEmail = user?.email ?? "";
@@ -148,16 +152,31 @@ export default function CreateEventPage() {
     console.log("[create-event] payload ready for the API:", payload);
 
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`,{
-       method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-           
-        },
-        body: JSON.stringify(payload)
-    })
-    const result = await res.json()
-    console.log(result)
+    setIsSubmitting(true);
+
+try {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error("Failed to create event");
+
+  const result = await res.json();
+  console.log(result);
+
+  toast.success("Event created!", "It now appears in Manage Events.");
+  setForm(emptyForm);
+  router.push("/upcoming-events");
+} catch (err) {
+  console.error(err);
+  toast.error("Could not create the event. Please try again.");
+} finally {
+  setIsSubmitting(false);
+}
+
+  
 
 
 
