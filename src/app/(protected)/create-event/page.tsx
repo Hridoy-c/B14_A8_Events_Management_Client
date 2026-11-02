@@ -21,6 +21,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
+import {
+  getMinEventDateISO,
+  validateEvent,
+  type EventFormErrors,
+  type EventFormValues,
+} from "@/lib/event-validation";
 
 
 const eventTypes = [
@@ -52,18 +58,7 @@ const imagePresets = [
   },
 ];
 
-type FormState = {
-  title: string;
-  type: string;
-  date: string;
-  location: string;
-  image: string;
-  description: string;
-};
-
-type FormErrors = Partial<Record<keyof FormState, string>>;
-
-const emptyForm: FormState = {
+const emptyForm: EventFormValues = {
   title: "",
   type: "",
   date: "",
@@ -72,56 +67,22 @@ const emptyForm: FormState = {
   description: "",
 };
 
-function toISODate(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 export default function CreateEventPage() {
   const router = useRouter();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const user = session?.user ?? null;
   const organizerEmail = user?.email ?? "";
 
-  const [form, setForm] = useState<FormState>(emptyForm);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [form, setForm] = useState<EventFormValues>(emptyForm);
+  const [errors, setErrors] = useState<EventFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Today is never allowed — the earliest selectable date is tomorrow.
-  const { todayISO, minDateISO } = useMemo(() => {
-    const now = new Date();
-    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    return { todayISO: toISODate(now), minDateISO: toISODate(tomorrow) };
-  }, []);
+  const minDateISO = useMemo(() => getMinEventDateISO(), []);
 
-  const update = (field: keyof FormState, value: string) => {
+  const update = (field: keyof EventFormValues, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
-  };
-
-  const validate = (values: FormState): FormErrors => {
-    const next: FormErrors = {};
-
-    if (!values.title.trim()) next.title = "Give your event a clear title.";
-    if (!values.type) next.type = "Select the type of event.";
-    if (!values.date) {
-      next.date = "Choose a date for your event.";
-    } else if (values.date <= todayISO) {
-      next.date = "The date must be in the future.";
-    }
-    if (!values.location.trim()) next.location = "Add a venue or location.";
-    if (!values.image.trim()) {
-      next.image = "Add a thumbnail image URL.";
-    } else if (!/^https?:\/\/\S+$/i.test(values.image.trim())) {
-      next.image = "Use a valid image URL starting with http.";
-    }
-    if (!values.description.trim()) {
-      next.description = "Describe what volunteers should expect.";
-    }
-
-    return next;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -132,7 +93,7 @@ export default function CreateEventPage() {
       return;
     }
 
-    const nextErrors = validate(form);
+    const nextErrors = validateEvent(form);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -141,7 +102,12 @@ export default function CreateEventPage() {
     }
 
     const payload = {
-      ...form,
+      title: form.title.trim(),
+      type: form.type,
+      date: form.date,
+      location: form.location.trim(),
+      image: form.image.trim(),
+      description: form.description.trim(),
       organizerName: user.name ?? null,
       organizerEmail: user.email ?? null,
     };
@@ -214,12 +180,12 @@ export default function CreateEventPage() {
                 <Input
                   id="event-title"
                   name="title"
-
+                  maxLength={120}
                   value={form.title}
                   onChange={(e) => update("title", e.target.value)}
                   placeholder="e.g. Winter Clothes Distribution — Mirpur 10, Dhaka"
                   aria-invalid={Boolean(errors.title)}
-                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 dark:border-pine-800 dark:bg-pine-800/40"
+                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 aria-invalid:border-red-500 dark:border-pine-800 dark:bg-pine-800/40"
                 />
               </div>
               {errors.title ? (
@@ -280,7 +246,7 @@ export default function CreateEventPage() {
                     onChange={(e) => update("date", e.target.value)}
                     aria-invalid={Boolean(errors.date)}
                     aria-describedby="event-date-hint"
-                    className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 dark:border-pine-800 dark:bg-pine-800/40 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70"
+                    className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 aria-invalid:border-red-500 dark:border-pine-800 dark:bg-pine-800/40 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70"
                   />
                 </div>
                 {errors.date ? (
@@ -307,7 +273,7 @@ export default function CreateEventPage() {
                   onChange={(e) => update("location", e.target.value)}
                   placeholder="e.g. Murgapara Town Hall, Dhaka"
                   aria-invalid={Boolean(errors.location)}
-                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 dark:border-pine-800 dark:bg-pine-800/40"
+                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 aria-invalid:border-red-500 dark:border-pine-800 dark:bg-pine-800/40"
                 />
               </div>
               {errors.location ? (
@@ -331,7 +297,7 @@ export default function CreateEventPage() {
                   onChange={(e) => update("image", e.target.value)}
                   placeholder="https://images.unsplash.com/photo-..."
                   aria-invalid={Boolean(errors.image)}
-                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 dark:border-pine-800 dark:bg-pine-800/40"
+                  className="h-11 rounded-xl border-pine-200 bg-pine-50/40 pl-10 text-sm shadow-xs focus-visible:ring-forest-500 aria-invalid:border-red-500 dark:border-pine-800 dark:bg-pine-800/40"
                 />
               </div>
               {errors.image ? (
@@ -376,7 +342,7 @@ export default function CreateEventPage() {
                 onChange={(e) => update("description", e.target.value)}
                 placeholder="Explain the purpose of the drive, volunteers required, items being distributed, or tasks to complete..."
                 aria-invalid={Boolean(errors.description)}
-                className="min-h-32 rounded-xl border-pine-200 bg-pine-50/40 px-3.5 py-3 text-sm shadow-xs focus-visible:ring-forest-500 dark:border-pine-800 dark:bg-pine-800/40"
+                className="min-h-32 rounded-xl border-pine-200 bg-pine-50/40 px-3.5 py-3 text-sm shadow-xs focus-visible:ring-forest-500 aria-invalid:border-red-500 dark:border-pine-800 dark:bg-pine-800/40"
               />
               <div className="flex items-center justify-between gap-4">
                 {errors.description ? (

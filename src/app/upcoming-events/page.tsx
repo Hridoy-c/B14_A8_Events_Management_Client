@@ -57,11 +57,7 @@ export default function UpcomingEventsPage() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const upcoming = data
-          .filter((event) => new Date(event.date) >= today) // hide past events
-          .sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-          ); // earliest first
+        const upcoming = data.filter((event) => new Date(event.date) >= today); // hide past events
 
         setEvents(upcoming);
       })

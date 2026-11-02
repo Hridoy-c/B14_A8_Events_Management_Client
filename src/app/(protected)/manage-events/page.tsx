@@ -43,13 +43,7 @@ const ManageEventsPage = () => {
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-events/${user.email}`)
       .then((res) => res.json())
-      .then((data: EventItem[]) =>
-        setEvents(
-          [...data].sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-          ),
-        ),
-      )
+      .then((data: EventItem[]) => setEvents(data))
       .catch((err) => console.error("Failed to load events:", err))
       .finally(() => setLoading(false));
   }, [user?.email]);

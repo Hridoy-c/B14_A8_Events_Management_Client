@@ -61,6 +61,7 @@ const JoinedEventsPage = () => {
           .map((record) => byId.get(String(record.eventId)))
           // Skip events that were deleted after the user joined.
           .filter((event): event is EventItem => Boolean(event))
+          // Soonest event date first.
           .sort(
             (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
           );

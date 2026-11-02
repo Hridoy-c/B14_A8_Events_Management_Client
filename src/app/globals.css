@@ -97,6 +97,7 @@
 }
 
 :root {
+  color-scheme: light;
   --background: #edf6f0; /* mint wash (#DAF1DE lightened) */
   --foreground: #051f20; /* deepest forest */
   --card: #ffffff;
@@ -133,6 +134,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #051f20;
   --foreground: #daf1de;
   --card: #0b2b26;

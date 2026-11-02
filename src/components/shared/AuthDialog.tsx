@@ -25,6 +25,8 @@ import {
   UserPlus,
 } from "lucide-react";
 
+import { toast } from "@/lib/toast";
+
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -47,28 +49,91 @@ export default function AuthDialog({
   const [rememberMe, setRememberMe] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Sync defaultMode when dialog opens
-  React.useEffect(() => {
+  // Reset the form state when the dialog is re-opened with a new mode.
+  // (Adjusting state during render is the recommended alternative to an
+  // effect that calls setState.)
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setMode(defaultMode);
+      setErrors({});
     }
-  }, [open, defaultMode]);
+  }
+
+  const clearError = (field: string) =>
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: "" } : prev));
+
+  const validate = () => {
+    const next: Record<string, string> = {};
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedImage = imageUrl.trim();
+
+    if (mode === "sign-up") {
+      if (!trimmedName) {
+        next.name = "Full name is required.";
+      } else if (trimmedName.length < 2) {
+        next.name = "Name must contain at least 2 characters.";
+      }
+    }
+
+    if (!trimmedEmail) {
+      next.email = "Email address is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmedEmail)) {
+      next.email = "Please enter a valid email address.";
+    }
+
+    if (mode === "sign-up" && trimmedImage) {
+      try {
+        const url = new URL(trimmedImage);
+        if (url.protocol !== "http:" && url.protocol !== "https:") {
+          next.imageUrl = "Please enter a valid http(s) image URL.";
+        }
+      } catch {
+        next.imageUrl = "Please enter a valid http(s) image URL.";
+      }
+    }
+
+    if (!password) {
+      next.password = "Password is required.";
+    } else if (password.length > 128) {
+      next.password = "Password must be 128 characters or fewer.";
+    } else if (mode === "sign-up") {
+      if (password.length < 8) {
+        next.password = "Password must be at least 8 characters long.";
+      } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+        next.password = "Use at least one uppercase and one lowercase letter.";
+      }
+    }
+
+    if (mode === "sign-up" && !agreeTerms) {
+      next.terms = "Please agree to the Terms of Service.";
+    }
+
+    return next;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (mode === "sign-up" && !agreeTerms) {
-      alert("Please agree to the Terms of Service to continue.");
+
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error("Please fix the highlighted fields.");
       return;
     }
 
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      alert(
+      toast.success(
         mode === "sign-in"
-          ? `Welcome back, ${email}!`
-          : `Account successfully created for ${name}!`
+          ? `Welcome back, ${email.trim()}!`
+          : `Account created for ${name.trim()}!`,
       );
       onOpenChange(false);
     }, 800);
@@ -167,11 +232,25 @@ export default function AuthDialog({
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    clearError("name");
+                  }}
                   placeholder="Alex Morgan"
-                  className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? "dialog-name-error" : undefined}
+                  className={`pl-9 h-9 rounded-xl bg-pine-50/50 text-xs focus-visible:ring-forest-500 dark:bg-pine-800/40 ${
+                    errors.name
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : "border-pine-200 dark:border-pine-800"
+                  }`}
                 />
               </div>
+              {errors.name ? (
+                <p id="dialog-name-error" className="text-[11px] text-red-500">
+                  {errors.name}
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -190,11 +269,25 @@ export default function AuthDialog({
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearError("email");
+                }}
                 placeholder="name@example.com"
-                className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? "dialog-email-error" : undefined}
+                className={`pl-9 h-9 rounded-xl bg-pine-50/50 text-xs focus-visible:ring-forest-500 dark:bg-pine-800/40 ${
+                  errors.email
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : "border-pine-200 dark:border-pine-800"
+                }`}
               />
             </div>
+            {errors.email ? (
+              <p id="dialog-email-error" className="text-[11px] text-red-500">
+                {errors.email}
+              </p>
+            ) : null}
           </div>
 
           {/* SIGN UP ONLY: Image URL Field */}
@@ -212,11 +305,27 @@ export default function AuthDialog({
                   id="dialog-image"
                   type="url"
                   value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
+                  onChange={(e) => {
+                    setImageUrl(e.target.value);
+                    clearError("imageUrl");
+                  }}
                   placeholder="https://example.com/avatar.jpg"
-                  className="pl-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
+                  aria-invalid={Boolean(errors.imageUrl)}
+                  aria-describedby={
+                    errors.imageUrl ? "dialog-image-error" : undefined
+                  }
+                  className={`pl-9 h-9 rounded-xl bg-pine-50/50 text-xs focus-visible:ring-forest-500 dark:bg-pine-800/40 ${
+                    errors.imageUrl
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : "border-pine-200 dark:border-pine-800"
+                  }`}
                 />
               </div>
+              {errors.imageUrl ? (
+                <p id="dialog-image-error" className="text-[11px] text-red-500">
+                  {errors.imageUrl}
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -234,7 +343,7 @@ export default function AuthDialog({
                   href="#forgot"
                   onClick={(e) => {
                     e.preventDefault();
-                    alert("Password reset instructions sent to your email!");
+                    toast.info("Password reset instructions sent to your email!");
                   }}
                   className="text-[11px] font-medium text-forest-600 hover:text-forest-500 dark:text-forest-400"
                 >
@@ -249,9 +358,20 @@ export default function AuthDialog({
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearError("password");
+                }}
                 placeholder="••••••••"
-                className="pl-9 pr-9 h-9 rounded-xl border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-800/40 text-xs focus-visible:ring-forest-500"
+                aria-invalid={Boolean(errors.password)}
+                aria-describedby={
+                  errors.password ? "dialog-password-error" : undefined
+                }
+                className={`pl-9 pr-9 h-9 rounded-xl bg-pine-50/50 text-xs focus-visible:ring-forest-500 dark:bg-pine-800/40 ${
+                  errors.password
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : "border-pine-200 dark:border-pine-800"
+                }`}
               />
               <button
                 type="button"
@@ -265,6 +385,14 @@ export default function AuthDialog({
                 )}
               </button>
             </div>
+            {errors.password ? (
+              <p
+                id="dialog-password-error"
+                className="text-[11px] text-red-500"
+              >
+                {errors.password}
+              </p>
+            ) : null}
           </div>
 
           {/* Sign-in: Remember Me / Sign-up: Agree to Terms */}
@@ -287,7 +415,10 @@ export default function AuthDialog({
               <Checkbox
                 id="dialog-terms"
                 checked={agreeTerms}
-                onCheckedChange={(checked) => setAgreeTerms(!!checked)}
+                onCheckedChange={(checked) => {
+                  setAgreeTerms(!!checked);
+                  clearError("terms");
+                }}
                 className="mt-0.5"
               />
               <Label
@@ -306,6 +437,12 @@ export default function AuthDialog({
               </Label>
             </div>
           )}
+
+          {mode === "sign-up" && errors.terms ? (
+            <p id="dialog-terms-error" className="text-[11px] text-red-500">
+              {errors.terms}
+            </p>
+          ) : null}
 
           {/* Submit Button */}
           <Button
@@ -336,7 +473,10 @@ export default function AuthDialog({
               : "Already have an account? "}
             <button
               type="button"
-              onClick={() => setMode(mode === "sign-in" ? "sign-up" : "sign-in")}
+              onClick={() => {
+                setMode(mode === "sign-in" ? "sign-up" : "sign-in");
+                setErrors({});
+              }}
               className="font-bold text-forest-600 dark:text-forest-400 hover:underline cursor-pointer inline-flex items-center gap-0.5 ml-1"
             >
               {mode === "sign-in" ? "Register now" : "Sign In"}

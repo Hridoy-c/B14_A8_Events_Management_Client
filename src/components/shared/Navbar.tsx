@@ -17,6 +17,7 @@ import {
 import { toast } from "@/lib/toast";
 
 import { authClient } from "@/lib/auth-client";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -194,6 +195,7 @@ export default function Navbar() {
 
             {/* 3. AUTH AREA & MOBILE MENU TOGGLE */}
             <div className="flex items-center gap-2 sm:gap-3">
+              <ThemeToggle />
               {isPending ? (
                 <div
                   className="h-10 w-10 rounded-full border border-pine-200 bg-pine-100 dark:border-pine-800 dark:bg-pine-800 animate-pulse"
