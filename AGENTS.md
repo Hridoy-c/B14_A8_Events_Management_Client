@@ -14,7 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Single Next.js 16.4 App Router client, TypeScript strict, not a monorepo. `@/*` maps to `src/*`. The package name still says `_server` — ignore it.
 - Companion Express API is a **sibling checkout**, not a workspace: `../b14_a8_events_management_server`. It has no dev/start script; run `node index.js` there (port 8000, `PORT` overridable). Both apps use MongoDB DB `B14_A8_Events_Management`.
-- Routes: `/`, `/upcoming-events`, `/upcoming-events/[id]`, `/sign-in`, `/sign-up`, `/create-event`, `/manage-events`, `/joined-events`, `/api/auth/[...all]`, 404. `(auth)` and `(protected)` are route groups and do not appear in URLs.
+- Routes: `/`, `/upcoming-events`, `/upcoming-events/[id]`, `/stories/[slug]`, `/sign-in`, `/sign-up`, `/create-event`, `/manage-events`, `/joined-events`, `/api/auth/[...all]`, 404. `(auth)` and `(protected)` are route groups and do not appear in URLs. Community story dummy data lives in `src/data/community-stories.ts`.
 - `(protected)` is naming only: no layout or middleware guards it. Pages individually call `authClient.useSession()` and render their own signed-out state.
 - Auth is real better-auth (email/password + Google/GitHub), not UI-only. Server config is `src/lib/auth.ts`, browser client is `src/lib/auth-client.ts`, and `src/app/api/auth/[...all]/route.ts` mounts `toNextJsHandler(auth)`.
 - Event data comes from direct `fetch` calls to `NEXT_PUBLIC_API_URL` in client components. Endpoints in use: `GET/POST /all-events`, `GET/PATCH/DELETE /all-events/:id`, `GET /my-events/:organizerEmail`, `POST /joined-events`, `GET /joined-events/:userEmail`.
