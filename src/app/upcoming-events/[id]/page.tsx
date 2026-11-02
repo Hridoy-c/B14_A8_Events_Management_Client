@@ -20,7 +20,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
 import EventDetailsSkeleton from "@/components/all-skeletons/EventDetailsSkeleton";
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 type EventItem = {
   _id: string;
@@ -76,7 +76,7 @@ export default function EventDetailsPage() {
     const formData = new FormData(e.currentTarget);
     const submitted = Object.fromEntries(formData.entries());
     console.log("Joining event with data:", submitted);
-    const token = await getTokenFromServer();
+    const token = await getTokenFromClient();
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/joined-events`, {

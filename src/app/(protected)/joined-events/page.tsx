@@ -8,7 +8,7 @@ import EventCard, { type EventItem } from "@/components/shared/EventCard";
 import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 // Shape of a document stored in the `joined-events` collection.
 // It only stores references to the event, not the full event fields.
@@ -36,7 +36,7 @@ const JoinedEventsPage = () => {
 
     const loadJoinedEvents = async () => {
       setLoading(true);
-      const token = await getTokenFromServer();
+      const token = await getTokenFromClient();
 
       try {
         const joinedRes = await fetch(

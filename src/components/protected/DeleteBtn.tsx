@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/lib/toast";
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 type Props = {
   id?: string;
@@ -29,7 +29,7 @@ const DeleteBtn = ({ id, title, onDeleted }: Props) => {
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault(); // keep the dialog open while the request runs
     if (!id) return;
-    const token = await getTokenFromServer();
+    const token = await getTokenFromClient();
 
     try {
       setIsDeleting(true);

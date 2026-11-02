@@ -5,24 +5,20 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CalendarDays,
-  Edit,
   Eye,
   MapPin,
   PlusCircle,
   Settings,
-  SquarePen,
   Tag,
-  Trash2,
   UserRound,
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
-import { toast } from "@/lib/toast";
 import { getType, type EventItem } from "@/components/shared/EventCard";
 import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import EditBtn from "@/components/protected/EditBtn";
 import DeleteBtn from "@/components/protected/DeleteBtn";
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString("en-US", {
@@ -38,44 +34,43 @@ const ManageEventsPage = () => {
 
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.email) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-events/${user.email}`)
-      .then((res) => res.json())
-      .then((data: EventItem[]) => setEvents(data))
-      .catch((err) => console.error("Failed to load events:", err))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const token = await getTokenFromClient();
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/my-events/${encodeURIComponent(user.email)}`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        if (!res.ok) throw new Error("Failed to load events");
+        const data = (await res.json()) as EventItem[];
+        if (!cancelled) setEvents(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to load events:", err);
+        if (!cancelled) setEvents([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadEvents();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.email]);
 
-  const handleDelete = async (id?: string) => {
-    if (!id) return;
-    if (!window.confirm("Delete this event? This cannot be undone.")) return;
-    const token = await getTokenFromServer();
-    try {
-      setDeletingId(id);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/all-events/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!res.ok) throw new Error("Delete failed");
 
-      setEvents((prev) => prev.filter((event) => event._id !== id));
-      toast.success("Event deleted.");
-    } catch (err) {
-      console.error(err);
-      toast.error("Could not delete the event. Please try again.");
-    } finally {
-      setDeletingId(null);
-    }
-  };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
