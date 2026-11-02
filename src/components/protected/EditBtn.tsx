@@ -21,6 +21,7 @@ import {
   type EventFormErrors,
   type EventFormValues,
 } from "@/lib/event-validation";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const eventTypes = [
   "Food Drive",
@@ -112,13 +113,15 @@ const EditBtn = ({ event, onUpdated }: Props) => {
       [typeKey]: form.type,
     };
 
+    const token = await getTokenFromClient();
+
     try {
       setIsSaving(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/all-events/${event._id}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         },
       );

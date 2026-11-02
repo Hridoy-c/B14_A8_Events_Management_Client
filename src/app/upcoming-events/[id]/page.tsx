@@ -20,6 +20,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
 import EventDetailsSkeleton from "@/components/all-skeletons/EventDetailsSkeleton";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 type EventItem = {
   _id: string;
@@ -75,12 +76,12 @@ export default function EventDetailsPage() {
     const formData = new FormData(e.currentTarget);
     const submitted = Object.fromEntries(formData.entries());
     console.log("Joining event with data:", submitted);
-    
+    const token = await getTokenFromServer();
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/joined-events`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" , authorization: `Bearer ${token}`},
         body: JSON.stringify(submitted),
       });
 

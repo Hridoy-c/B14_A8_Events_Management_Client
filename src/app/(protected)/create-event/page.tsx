@@ -27,6 +27,7 @@ import {
   type EventFormErrors,
   type EventFormValues,
 } from "@/lib/event-validation";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 
 const eventTypes = [
@@ -113,11 +114,12 @@ export default function CreateEventPage() {
     };
 
     setIsSubmitting(true);
+      const token = await getTokenFromClient()
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", authorization: `Bearer ${token}`  },
         body: JSON.stringify(payload),
       });
 

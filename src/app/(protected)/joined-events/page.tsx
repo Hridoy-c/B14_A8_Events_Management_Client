@@ -8,6 +8,7 @@ import EventCard, { type EventItem } from "@/components/shared/EventCard";
 import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 // Shape of a document stored in the `joined-events` collection.
 // It only stores references to the event, not the full event fields.
@@ -35,10 +36,16 @@ const JoinedEventsPage = () => {
 
     const loadJoinedEvents = async () => {
       setLoading(true);
+      const token = await getTokenFromServer();
 
       try {
         const joinedRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/joined-events/${encodeURIComponent(user.email)}`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         );
         if (!joinedRes.ok) throw new Error("Failed to load joined events");
 
@@ -50,7 +57,9 @@ const JoinedEventsPage = () => {
 
         // Joined records only hold an eventId, so hydrate them with the
         // real event documents before handing them to EventCard.
-        const allRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`);
+        const allRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/all-events`,
+        );
         if (!allRes.ok) throw new Error("Failed to load events");
 
         const allEvents = (await allRes.json()) as EventItem[];

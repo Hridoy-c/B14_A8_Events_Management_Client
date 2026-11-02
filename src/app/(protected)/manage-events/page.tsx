@@ -22,6 +22,7 @@ import { getType, type EventItem } from "@/components/shared/EventCard";
 import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import EditBtn from "@/components/protected/EditBtn";
 import DeleteBtn from "@/components/protected/DeleteBtn";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString("en-US", {
@@ -52,13 +53,16 @@ const ManageEventsPage = () => {
   const handleDelete = async (id?: string) => {
     if (!id) return;
     if (!window.confirm("Delete this event? This cannot be undone.")) return;
-
+    const token = await getTokenFromServer();
     try {
       setDeletingId(id);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/all-events/${id}`,
         {
           method: "DELETE",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
         },
       );
       if (!res.ok) throw new Error("Delete failed");

@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/lib/toast";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 type Props = {
   id?: string;
@@ -28,6 +29,7 @@ const DeleteBtn = ({ id, title, onDeleted }: Props) => {
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault(); // keep the dialog open while the request runs
     if (!id) return;
+    const token = await getTokenFromServer();
 
     try {
       setIsDeleting(true);
@@ -35,6 +37,9 @@ const DeleteBtn = ({ id, title, onDeleted }: Props) => {
         `${process.env.NEXT_PUBLIC_API_URL}/all-events/${id}`,
         {
           method: "DELETE",
+          headers: {
+      authorization: `Bearer ${token}`,
+    }
         },
       );
       if (!res.ok) throw new Error("Delete failed");
