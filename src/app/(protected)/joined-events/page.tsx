@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CalendarCheck, Search, Ticket } from "lucide-react";
 
 import EventCard, { type EventItem } from "@/components/shared/EventCard";
+import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
 
@@ -146,9 +147,7 @@ const JoinedEventsPage = () => {
 
       {/* Content */}
       {isLoading ? (
-        <p className="mt-16 text-center text-pine-500 dark:text-pine-400">
-          Loading your joined events...
-        </p>
+        <EventGridSkeleton count={3} className="mt-10" />
       ) : !user ? (
         <p className="mt-16 text-center text-pine-500 dark:text-pine-400">
           Please{" "}

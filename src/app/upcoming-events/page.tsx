@@ -13,6 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 import EventCard from "@/components/shared/EventCard";
+import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 
 type EventItem = {
   _id?: string;
@@ -147,7 +148,7 @@ export default function UpcomingEventsPage() {
 
       {/* Events grid */}
       {loading ? (
-        <p className="mt-16 text-center text-pine-500">Loading events...</p>
+        <EventGridSkeleton count={6} className="mt-10" />
       ) : filteredEvents.length === 0 ? (
         <p className="mt-16 text-center text-pine-500 dark:text-pine-400">
           No events found.

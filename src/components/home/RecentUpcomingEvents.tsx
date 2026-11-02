@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import EventCard from "../shared/EventCard";
+import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 
 type EventItem = {
   _id?: string;
@@ -45,6 +46,7 @@ const defaultCategoryStyle = {
 
 const RecentUpcomingEvents = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`)
@@ -62,7 +64,8 @@ const RecentUpcomingEvents = () => {
 
         setEvents(upcoming);
       })
-      .catch((err) => console.error("Failed to load events:", err));
+      .catch((err) => console.error("Failed to load events:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -106,11 +109,15 @@ const RecentUpcomingEvents = () => {
         </div>
 
         {/* Event cards */}
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {events.map((event) => (
-            <EventCard key={event._id ?? event.title} event={event} />
-          ))}
-        </div>
+        {loading ? (
+          <EventGridSkeleton count={6} className="mt-10" />
+        ) : (
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => (
+              <EventCard key={event._id ?? event.title} event={event} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

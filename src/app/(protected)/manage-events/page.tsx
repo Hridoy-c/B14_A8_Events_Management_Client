@@ -19,6 +19,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
 import { getType, type EventItem } from "@/components/shared/EventCard";
+import EventGridSkeleton from "@/components/all-skeletons/EventGridSkeleton";
 import EditBtn from "@/components/protected/EditBtn";
 import DeleteBtn from "@/components/protected/DeleteBtn";
 
@@ -106,9 +107,7 @@ const ManageEventsPage = () => {
 
       {/* Content */}
       {isPending || (user && loading) ? (
-        <p className="mt-16 text-center text-pine-500 dark:text-pine-400">
-          Loading your events...
-        </p>
+        <EventGridSkeleton count={6} className="mt-10" />
       ) : !user ? (
         <p className="mt-16 text-center text-pine-500 dark:text-pine-400">
           Please{" "}

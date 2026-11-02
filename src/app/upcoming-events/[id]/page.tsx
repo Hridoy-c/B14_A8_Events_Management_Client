@@ -19,6 +19,7 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/toast";
+import EventDetailsSkeleton from "@/components/all-skeletons/EventDetailsSkeleton";
 
 type EventItem = {
   _id: string;
@@ -109,11 +110,7 @@ export default function EventDetailsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-24 text-center text-pine-500 dark:text-pine-400">
-        Loading event...
-      </div>
-    );
+    return <EventDetailsSkeleton />;
   }
 
   if (notFound || !event) {
