@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { redirect } from "next/navigation";
 
 
 const eventTypes = [
@@ -128,12 +127,11 @@ export default function CreateEventPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Runs on every submit request — including invalid ones — so the log
-    // always shows up in the BROWSER console (DevTools), not the dev terminal.
-    const formData = new FormData(event.currentTarget);
-    const submitted = Object.fromEntries(formData.entries());
-   
-  
+    if (!user) {
+      toast.error("Please sign in to create an event.");
+      return;
+    }
+
     const nextErrors = validate(form);
     setErrors(nextErrors);
 
@@ -141,54 +139,33 @@ export default function CreateEventPage() {
       toast.error("Please fix the highlighted fields.");
       return;
     }
-    const createEventDate = new Date()
 
     const payload = {
       ...form,
-      organizerName: user?.name ?? null,
-      organizerEmail: user?.email ?? null,
-      createEventDate: createEventDate
+      organizerName: user.name ?? null,
+      organizerEmail: user.email ?? null,
     };
-    console.log("[create-event] payload ready for the API:", payload);
-
 
     setIsSubmitting(true);
 
-try {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  if (!res.ok) throw new Error("Failed to create event");
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
 
-  const result = await res.json();
-  console.log(result);
-
-  toast.success("Event created!", "It now appears in Manage Events.");
-  setForm(emptyForm);
-  router.push("/upcoming-events");
-} catch (err) {
-  console.error(err);
-  toast.error("Could not create the event. Please try again.");
-} finally {
-  setIsSubmitting(false);
-}
-
-  
-
-
-
-
-
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setForm(emptyForm);
       toast.success("Event created!", "It now appears in Manage Events.");
-    }, 700);
+      setForm(emptyForm);
+      router.push("/upcoming-events");
+    } catch (err) {
+      console.error("Failed to create event:", err);
+      toast.error("Could not create the event. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

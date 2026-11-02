@@ -236,6 +236,10 @@ export default function EventDetailsPage() {
                 )}
               </button>
             </form>
+
+
+
+            
           </div>
 
           {/* Content + organizer */}

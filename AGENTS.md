@@ -12,32 +12,43 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project shape
 
-- Single Next.js 16 App Router app, not a monorepo. `@/*` maps to `src/*`.
-- This is the **client** repo despite `package.json` still being named `b14_a8_events_management_server`.
-- Routes currently implemented: `/`, `/alerts`, `/sign-in`, `/sign-up`, plus the 404 page. `src/app/(auth)/` is a route group, so it does not appear in the URL.
-- Auth and the local-cause-alert subscription are UI-only: they fake submission with `alert()`/local state + `setTimeout`. There is no API client, server action, auth provider, or env var usage yet.
-- `Navbar` links to `/upcoming-events` and `/create-event`, but those routes do not exist yet.
-- App shell: `src/app/layout.tsx` (fonts + `Navbar`). Home: `src/app/page.tsx` composes sections from `src/components/home/`; dummy upcoming-event data is in `src/data/upcoming-events.ts`. Shared components in `src/components/shared/`; generated primitives in `src/components/ui/`.
+- Single Next.js 16.4 App Router client, TypeScript strict, not a monorepo. `@/*` maps to `src/*`. The package name still says `_server` — ignore it.
+- Companion Express API is a **sibling checkout**, not a workspace: `../b14_a8_events_management_server`. It has no dev/start script; run `node index.js` there (port 8000, `PORT` overridable). Both apps use MongoDB DB `B14_A8_Events_Management`.
+- Routes: `/`, `/upcoming-events`, `/upcoming-events/[id]`, `/sign-in`, `/sign-up`, `/create-event`, `/manage-events`, `/joined-events`, `/api/auth/[...all]`, 404. `(auth)` and `(protected)` are route groups and do not appear in URLs.
+- `(protected)` is naming only: no layout or middleware guards it. Pages individually call `authClient.useSession()` and render their own signed-out state.
+- Auth is real better-auth (email/password + Google/GitHub), not UI-only. Server config is `src/lib/auth.ts`, browser client is `src/lib/auth-client.ts`, and `src/app/api/auth/[...all]/route.ts` mounts `toNextJsHandler(auth)`.
+- Event data comes from direct `fetch` calls to `NEXT_PUBLIC_API_URL` in client components. Endpoints in use: `GET/POST /all-events`, `GET/PATCH/DELETE /all-events/:id`, `GET /my-events/:organizerEmail`, `POST /joined-events`, `GET /joined-events/:userEmail`.
+- The Express API has **no auth or ownership checks**; `manage-events` only filters by the signed-in user's email. Do not mistake that for server-side authorization.
+- Event docs are raw Mongo objects (`_id`, `organizerName`, `organizerEmail`, `date` as `YYYY-MM-DD`). Shared shape and `getType()` live in `src/components/shared/EventCard.tsx`; they tolerate `type`, `eventType`, and `category`. Lists are filtered/sorted client-side.
+- `joined-events` is still a stub, and `create-event` still contains a leftover demo `setTimeout` after its real fetch — don't copy those patterns. Local-cause alert signup and "forgot password" are still fake (`setTimeout`/toast).
+
+## Setup / env
+
+- `.env` is gitignored and required. `src/lib/auth.ts` throws at import when `MONGODB_URI` is missing, so dev/build fail without it.
+- Keys used: `MONGODB_URI`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GOOGLE_AUTH_CLIENT_ID`, `GOOGLE_AUTH_CLIENT_SECRET`, `GITHUB_AUTH_CLIENT_ID`, `GITHUB_AUTH_CLIENT_SECRETS` (plural; `auth.ts` also accepts the singular typo), and `NEXT_PUBLIC_API_URL` (currently `http://localhost:8000`). `NEXT_PUBLIC_BETTER_AUTH_URL` is optional; auth defaults to same origin.
+- Start MongoDB and the Express API before exercising data pages; otherwise fetches fail and lists stay empty/loading.
 
 ## Commands
 
-Use npm only (`package-lock.json`); the README's yarn/pnpm/bun options are boilerplate.
-
-- `npm run dev` — Next 16 with Turbopack
-- `npm run build` — production build; also runs the TypeScript check. Currently passes.
-- `npm run lint` — flat ESLint, no `next lint`. Currently **fails on pre-existing issues**, including `react-hooks/set-state-in-effect` in `AuthDialog`, `components/ui/carousel.tsx`, and `hooks/use-mobile.ts`.
+- npm only (`package-lock.json`); ignore the README's yarn/pnpm/bun options.
+- `npm run dev` — Next 16 + Turbopack. `next dev` rewrites the generated block at the top of this file; keep it.
 - `npx tsc --noEmit` — standalone typecheck
-- `npx eslint <path>` — lint only touched files instead of assuming the whole-repo lint failure is yours
+- `npm run build` — Turbopack build + TypeScript check. Baseline lint errors do not block it.
+- `npm run lint` — flat ESLint (`eslint`, no `next lint`). Baseline fails on 3 `react-hooks/set-state-in-effect` errors: `src/components/shared/AuthDialog.tsx`, `src/components/ui/carousel.tsx`, `src/hooks/use-mobile.ts`. Most other output is unused-var warnings.
+- `npx eslint <path>` — check only touched files instead of attributing baseline failures to your change.
 - No test runner or test script is configured.
+- If a build dies with `FATAL ERROR: Zone Allocation failed`, retry with a larger heap: `$env:NODE_OPTIONS='--max-old-space-size=4096'; npm run build` (`reactCompiler`'s Babel worker).
 
-## UI/toolchain gotchas
+## UI/toolchain
 
-- The design contract is `ASSIGNMENT_REQUIREMENTS.md`; `.agents/rules/assignment-requirements.md` mirrors it, so keep both in sync. Rules are mandatory: EventPulse branding, Poppins headings (`font-heading`), Plus Jakarta Sans body (`font-sans`), forest→sage gradient CTAs, `max-w-7xl` containers, `py-16 md:py-24` sections, new X logo, full responsiveness.
-- Brand palette (the only accent colors allowed): `#051F20` `#0B2B26` `#163832` `#235347` `#8EB69B` `#DAF1DE`, exposed as the `forest-*`, `sage-*`, and `pine-*` (neutral) Tailwind scales in `globals.css`. Use `red-*` only for real errors. Existing pages already use these scales — don't reintroduce indigo/rose/purple/slate utilities.
-- Some current UI predates the spec (e.g. hero heading scale, teal Register button). Follow the spec rather than copying those deviations.
-- Tailwind v4 is CSS-first: there is no `tailwind.config.*`. Theme tokens and gradient helpers live in `src/app/globals.css`; CSS is wired through `@tailwindcss/turbopack` in `next.config.ts`.
-- `components.json` uses shadcn style `base-nova`, built on **Base UI** (`@base-ui/react`), not Radix. There is no `asChild`; use Base UI's `render` prop or wrap the element.
-- `cn` comes from the `cn` package (re-exported by `@/lib/utils`). Generated files in `src/components/ui/` import it directly and usually omit semicolons; avoid reformatting them wholesale.
-- Fonts are loaded in `layout.tsx` via `next/font/google` as `--font-heading` (Poppins) and `--font-sans` (Plus Jakarta Sans). Dark-mode tokens exist, but there is no theme provider/toggle.
-- The X logo component is at `public/icons/XIcon.tsx`, outside `src/` and therefore not reachable through the `@/` alias.
+- `ASSIGNMENT_REQUIREMENTS.md` is the mandatory design contract: EventPulse branding, Poppins headings (`font-heading`), Plus Jakarta Sans body (`font-sans`), forest→sage gradient CTAs, `max-w-7xl` containers, `py-16 md:py-24` sections, fixed `h-20` glass navbar, new X logo, full responsiveness. The old `.agents/rules/assignment-requirements.md` mirror has been deleted — don't recreate it.
+- Only brand accents are allowed: `forest-*`, `sage-*`, and `pine-*` (neutral) from `src/app/globals.css`. Use red only for real errors; no indigo/rose/purple/slate/teal accents.
+- Tailwind v4 is CSS-first: there is no `tailwind.config.*`. Theme tokens live in `globals.css` and CSS is wired through the `@tailwindcss/turbopack` rule in `next.config.ts`.
+- shadcn style `base-nova` is built on **Base UI** (`@base-ui/react`), not Radix. There is no `asChild`; use Base UI's `render` prop (see `Navbar`) or wrap the element.
+- `cn` is the `cn` package re-exported by `@/lib/utils`. Generated `src/components/ui/*` files import it directly and omit semicolons; avoid reformatting them wholesale.
+- Use `@/lib/toast` (`toast.success/error/info/warning`) for notifications; `ToastProvider` is mounted in the root layout. Don't add `alert()` in new code.
+- `next.config.ts` enables `reactCompiler` and allows any HTTPS image host; use `next/image`.
+- Fonts load in `src/app/layout.tsx`. Dark-mode CSS tokens exist, but there is no theme provider or toggle.
+- `XIcon` lives at `public/icons/XIcon.tsx`, outside `src/`, so import it by relative path rather than `@/`.
+- `src/data/upcoming-events.ts` is unused legacy dummy data; live lists come from the API.
 
