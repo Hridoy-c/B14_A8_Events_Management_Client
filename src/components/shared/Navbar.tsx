@@ -12,6 +12,7 @@ import {
   Menu,
   Plus,
   Ticket,
+  UserRound,
   X,
 } from "lucide-react";
 import { toast } from "@/lib/toast";
@@ -31,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const accountLinks = [
+  { href: "/profile", label: "Profile", icon: UserRound },
   { href: "/create-event", label: "Create Event", icon: Plus },
   { href: "/manage-events", label: "Manage Events", icon: CalendarRange },
   { href: "/joined-events", label: "Joined Events", icon: Ticket },

@@ -24,7 +24,7 @@ export default function AccountPageShell({
       <div className="pointer-events-none absolute bottom-0 right-0 h-72 w-72 rounded-full bg-sage-500/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
-        <div className="max-w-3xl">
+        <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-forest-100 bg-forest-50 px-3 py-1 text-xs font-semibold text-forest-600 shadow-xs dark:border-forest-900 dark:bg-forest-950/60 dark:text-forest-400">
             <Icon className="h-3.5 w-3.5 text-sage-500" />
             {eyebrow}
@@ -34,7 +34,7 @@ export default function AccountPageShell({
             {title}
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-pine-600 dark:text-pine-400 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-pine-600 dark:text-pine-400 sm:text-base">
             {description}
           </p>
 
